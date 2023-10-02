@@ -1,15 +1,15 @@
 package com.example.mypetapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.example.mypetapplication.base.BaseActivity
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "EmailPassword"
@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         auth = Firebase.auth
 
+        findViewById<MaterialButton>(R.id.signInButton).setOnClickListener {
+            signIn("rusakov.sergii.dev@gmail.com",  "Polinom314")
+        }
         findViewById<MaterialButton>(R.id.signUpButton).setOnClickListener {
             createAccount("rusakov.sergii.dev@gmail.com",  "Polinom314")
         }

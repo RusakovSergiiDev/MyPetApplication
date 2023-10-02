@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MyPetApplication</string>
 
+    <string name="splash">Sign In</string>
+    <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
 </resources>
