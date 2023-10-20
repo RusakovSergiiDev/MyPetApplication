@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">MyPetApplication</string>
 
-    <string name="splash">Sign In</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
+    <string name="pet_application">Pet Application</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
