@@ -21,13 +21,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         auth = Firebase.auth
-
-        findViewById<MaterialButton>(R.id.signInButton).setOnClickListener {
-            signIn("rusakov.sergii.dev@gmail.com",  "Polinom314")
-        }
-        findViewById<MaterialButton>(R.id.signUpButton).setOnClickListener {
-            createAccount("rusakov.sergii.dev@gmail.com",  "Polinom314")
-        }
     }
 
     private fun createAccount(email: String, password: String) {
