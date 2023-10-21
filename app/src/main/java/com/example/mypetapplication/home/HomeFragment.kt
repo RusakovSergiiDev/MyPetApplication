@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.mypetapplication.R
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.map
 import com.example.mypetapplication.base.BaseFragment
 import com.example.mypetapplication.base.ScreenId
+import com.example.mypetapplication.home.compose.HomeScreen
+import com.example.mypetapplication.ui.map.map
 
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
 
     override val screenId: ScreenId
         get() = ScreenId.Home
@@ -16,8 +20,19 @@ class HomeFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View = ComposeView(this.requireContext()).apply {
+        setContent {
+            HomeScreen(
+                homeMainOptionUiItemsState = viewModel.homeMainOptionsLiveData.map { items ->
+                    items.map(
+                        requireContext()
+                    )
+                }.observeAsState(initial = emptyList())
+            )
+        }
+    }
+
+    override fun onSetupObservers() {
+
     }
 }
