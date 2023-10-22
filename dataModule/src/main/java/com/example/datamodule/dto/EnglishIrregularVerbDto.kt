@@ -1,4 +1,4 @@
-package com.example.mypetapplication.data
+package com.example.datamodule.dto
 
 data class EnglishIrregularVerbDto(
     val infinitive: String? = null,

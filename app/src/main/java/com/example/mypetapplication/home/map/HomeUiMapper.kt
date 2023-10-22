@@ -3,11 +3,11 @@ package com.example.mypetapplication.home.map
 import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
-import com.example.mypetapplication.data.HomeMainOptionDto
+import com.example.datamodule.models.HomeMainOptionModel
 import com.example.mypetapplication.ui.data.HomeMainOptionUIiItem
 
 class HomeUiMapper(private val context: Context) {
-    private fun HomeMainOptionDto.mapToUiItem(): HomeMainOptionUIiItem =
+    private fun HomeMainOptionModel.mapToUiItem(): HomeMainOptionUIiItem =
         HomeMainOptionUIiItem(
             type = this.type,
             title = context.getString(this.titleResId),
@@ -16,7 +16,7 @@ class HomeUiMapper(private val context: Context) {
             onHomeMainOptionItemClicked = { this.onHomeMainOptionItemClicked?.invoke(this.type) }
         )
 
-    fun mapToUiItems(items: List<HomeMainOptionDto>): List<HomeMainOptionUIiItem> {
+    fun mapToUiItems(items: List<HomeMainOptionModel>): List<HomeMainOptionUIiItem> {
         return items.map { item -> item.mapToUiItem() }
     }
 }
