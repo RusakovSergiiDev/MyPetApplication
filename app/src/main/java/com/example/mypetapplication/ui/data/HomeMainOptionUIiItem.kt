@@ -1,7 +1,7 @@
 package com.example.mypetapplication.ui.data
 
 import androidx.compose.ui.graphics.Color
-import com.example.mypetapplication.home.data.HomeMainOptionType
+import com.example.mypetapplication.data.HomeMainOptionType
 
 data class HomeMainOptionUIiItem(
     val type: HomeMainOptionType,

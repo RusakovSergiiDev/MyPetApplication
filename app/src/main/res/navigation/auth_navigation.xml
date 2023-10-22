@@ -23,10 +23,10 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.mypetapplication.home.HomeFragment"
-        android:label="fragment_home" >
+        android:label="fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_englishIrregularVerbsFragment"
-            app:destination="@id/englishIrregularVerbsFragment" />
+            app:destination="@id/english_irregular_verbs_navigation" />
     </fragment>
 
     <fragment
@@ -39,9 +39,7 @@
             app:popUpTo="@+id/authSelectionFragment"
             app:popUpToInclusive="true" />
     </fragment>
-    <fragment
-        android:id="@+id/englishIrregularVerbsFragment"
-        android:name="com.example.mypetapplication.EnglishIrregularVerbsFragment"
-        android:label="fragment_english_irregular_verbs"
-        tools:layout="@layout/fragment_english_irregular_verbs" />
+
+    <include app:graph="@navigation/english_irregular_verbs_navigation" />
+
 </navigation>

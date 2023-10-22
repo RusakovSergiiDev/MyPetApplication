@@ -7,12 +7,17 @@ import android.view.ViewGroup
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.map
+import androidx.navigation.fragment.findNavController
+import com.example.mypetapplication.R
 import com.example.mypetapplication.base.BaseFragment
 import com.example.mypetapplication.base.ScreenId
 import com.example.mypetapplication.home.compose.HomeScreen
-import com.example.mypetapplication.ui.map.map
+import com.example.mypetapplication.home.map.HomeUiMapper
 
 class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
+
+    private val uiMapper: HomeUiMapper
+        get() = HomeUiMapper(requireContext())
 
     override val screenId: ScreenId
         get() = ScreenId.Home
@@ -24,15 +29,15 @@ class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
         setContent {
             HomeScreen(
                 homeMainOptionUiItemsState = viewModel.homeMainOptionsLiveData.map { items ->
-                    items.map(
-                        requireContext()
-                    )
+                    uiMapper.mapToUiItems(items)
                 }.observeAsState(initial = emptyList())
             )
         }
     }
 
     override fun onSetupObservers() {
-
+        viewModel.navigateToEnglishIrregularVerbs.observe(viewLifecycleOwner) {
+            findNavController().navigate(R.id.action_homeFragment_to_englishIrregularVerbsFragment)
+        }
     }
 }
