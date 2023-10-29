@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -9,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.mypetapplication"
-        minSdk 21
+        minSdk 24
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -25,12 +26,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     buildFeatures {
@@ -51,9 +52,17 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
+
+    // Firebase
     implementation 'com.google.firebase:firebase-auth-ktx:22.2.0'
+    implementation 'com.google.firebase:firebase-database:20.3.0'
+
+    // Navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.4'
     implementation 'androidx.navigation:navigation-ui-ktx:2.7.4'
+
+    // Compose
     implementation 'androidx.activity:activity-compose:1.8.0'
     implementation "androidx.compose.animation:animation:1.5.4"
     implementation "androidx.compose.foundation:foundation:1.5.4"
@@ -63,6 +72,12 @@ dependencies {
     implementation 'androidx.compose.ui:ui-tooling-preview-android:1.5.4'
     implementation "androidx.compose.runtime:runtime-livedata:1.5.4"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-alpha03"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
-    implementation 'com.google.firebase:firebase-database:20.3.0'
+    implementation 'androidx.compose.material3:material3:1.1.2'
+
+    // Dagger
+    implementation 'com.google.dagger:dagger:2.48.1'
+    kapt 'com.google.dagger:dagger-compiler:2.48.1'
+
+    implementation project(path: ':dataModule')
+    implementation project(path: ':presentationModule')
 }

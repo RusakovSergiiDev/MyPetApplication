@@ -24,6 +24,7 @@ class EnglishIrregularVerbsFragment :
     ): View = ComposeView(requireContext()).apply {
         setContent {
             EnglishIrregularVerbsScreen(
+                onBackClicked = { viewModel.onBackClicked() },
                 onSeeAllClicked = { viewModel.onSeeAllClicked() }
             )
         }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 
 abstract class BaseFragment<VM : BaseViewModel>(private val viewModelJavaClass: Class<VM>) :
     Fragment() {
@@ -22,5 +23,9 @@ abstract class BaseFragment<VM : BaseViewModel>(private val viewModelJavaClass: 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onSetupObservers()
+
+        viewModel.navigationBackEvent.observe(viewLifecycleOwner) {
+            findNavController().popBackStack()
+        }
     }
 }

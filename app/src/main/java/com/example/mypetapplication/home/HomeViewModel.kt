@@ -1,10 +1,10 @@
 package com.example.mypetapplication.home
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
-import com.example.mypetapplication.R
 import com.example.mypetapplication.base.BaseViewModel
-import com.example.mypetapplication.data.HomeMainOptionDto
-import com.example.mypetapplication.data.HomeMainOptionType
+import com.example.datamodule.models.HomeMainOptionModel
+import com.example.datamodule.types.HomeMainOptionType
 import com.example.mypetapplication.utils.SimpleNavigationEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -12,36 +12,43 @@ class HomeViewModel : BaseViewModel() {
 
     // Internal param(s)
     private val homeMainOptionItemsSourceFlow =
-        MutableStateFlow<List<HomeMainOptionDto>>(emptyList())
+        MutableStateFlow<List<HomeMainOptionModel>>(emptyList())
 
     // External param(s)
-    val homeMainOptionsLiveData = homeMainOptionItemsSourceFlow.asLiveData()
+    val homeMainOptionsLiveData: LiveData<List<HomeMainOptionModel>> = homeMainOptionItemsSourceFlow.asLiveData()
 
     // Event(s)
     val navigateToEnglishIrregularVerbs = SimpleNavigationEvent()
+    val navigateToSpanishTop200Verbs = SimpleNavigationEvent()
 
     init {
         generateHomeMainOptionItems()
     }
 
     private fun generateHomeMainOptionItems() {
-        val result = mutableListOf<HomeMainOptionDto>()
-        val irregularVerbsItem = HomeMainOptionDto(
-            type = HomeMainOptionType.IrregularVerbs,
-            titleResId = R.string.label_irregularVerbs,
-            descriptionResId = R.string.label_irregularVerbsDescription,
-            solidColorResId = R.color.colorYellowLight,
+        val result = mutableListOf<HomeMainOptionModel>()
+        val englishIrregularVerbsItem = HomeMainOptionModel(
+            type = HomeMainOptionType.ENGLISH_IRREGULAR_VERBS,
+            titleResId = com.example.presentationmodule.R.string.label_irregularVerbs,
+            descriptionResId = com.example.presentationmodule.R.string.label_irregularVerbsDescription,
             onHomeMainOptionItemClicked = { processHomeMainOptionItemSelection(it) }
         )
         result.add(
-            irregularVerbsItem
+            englishIrregularVerbsItem
         )
+        val spainVerbsItem = HomeMainOptionModel(
+            type = HomeMainOptionType.SPANISH_TOP_200_VERBS,
+            titleResId = com.example.presentationmodule.R.string.label_homeOptionSpanishVerbs,
+            onHomeMainOptionItemClicked = { processHomeMainOptionItemSelection(it) }
+        )
+        result.add(spainVerbsItem)
         homeMainOptionItemsSourceFlow.value = result
     }
 
     private fun processHomeMainOptionItemSelection(type: HomeMainOptionType) {
         when (type) {
-            HomeMainOptionType.IrregularVerbs -> navigateToEnglishIrregularVerbs.call()
+            HomeMainOptionType.ENGLISH_IRREGULAR_VERBS -> navigateToEnglishIrregularVerbs.call()
+            HomeMainOptionType.SPANISH_TOP_200_VERBS -> navigateToSpanishTop200Verbs.call()
             else -> {}
         }
     }

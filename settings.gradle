@@ -14,3 +14,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "MyPetApplication"
 include ':app'
+include ':dataModule'
+include ':presentationModule'
