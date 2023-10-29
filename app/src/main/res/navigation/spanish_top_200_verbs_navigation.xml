@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/spanish_top_200_verbs_navigation"
+    app:startDestination="@id/spanishTop200VerbsFragment">
+
+    <fragment
+        android:id="@+id/spanishTop200VerbsFragment"
+        android:name="com.example.mypetapplication.features.spain.SpanishTop200VerbsFragment" />
+
+</navigation>

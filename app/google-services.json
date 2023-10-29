@@ -2,7 +2,8 @@
   "project_info": {
     "project_number": "727715576756",
     "project_id": "mypetapplication-95103",
-    "storage_bucket": "mypetapplication-95103.appspot.com"
+    "storage_bucket": "mypetapplication-95103.appspot.com",
+    "firebase_url": "https://mypetapplication-95103-default-rtdb.europe-west1.firebasedatabase.app/"
   },
   "client": [
     {

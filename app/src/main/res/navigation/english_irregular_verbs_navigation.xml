@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/english_irregular_verbs_navigation"
+    app:startDestination="@id/englishIrregularVerbsFragment">
+
+    <fragment
+        android:id="@+id/englishIrregularVerbsFragment"
+        android:name="com.example.mypetapplication.features.english.EnglishIrregularVerbsFragment"
+        android:label="fragment_english_irregular_verbs" >
+        <action
+            android:id="@+id/action_englishIrregularVerbsFragment_to_englishAllIrregularVerbsFragment"
+            app:destination="@id/englishAllIrregularVerbsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/englishAllIrregularVerbsFragment"
+        android:name="com.example.mypetapplication.features.english.EnglishAllIrregularVerbsFragment"
+        android:label="fragment_english_all_irregular_verbs" />
+
+</navigation>
