@@ -16,7 +16,7 @@ class EnglishAllIrregularVerbsFragment :
     BaseFragment<EnglishAllIrregularVerbsViewModel>(EnglishAllIrregularVerbsViewModel::class.java) {
 
     private val uiMapper: EnglishUiMapper
-        get() = EnglishUiMapper(requireContext())
+        get() = EnglishUiMapper()
 
     override val screenId: ScreenId
         get() = ScreenId.EnglishAllIrregularVerbs
@@ -28,7 +28,8 @@ class EnglishAllIrregularVerbsFragment :
     ): View = ComposeView(requireContext()).apply {
         setContent {
             EnglishAllIrregularVerbsScreen(
-                viewModel.englishIrregularVerbsLiveData.map { items ->
+                onBackClicked = { viewModel.onBackClicked() },
+                viewModel.englishIrregularVerbUiItemsLiveData.map { items ->
                     uiMapper.mapToUiItems(items)
                 }.observeAsState(initial = emptyList())
             )

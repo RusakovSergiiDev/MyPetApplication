@@ -1,13 +1,18 @@
 package com.example.mypetapplication.authselection.compose
 
+import android.widget.ProgressBar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -27,6 +32,7 @@ fun AuthSelectionScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         val isSignIn = isSignInState.value
@@ -35,19 +41,25 @@ fun AuthSelectionScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = emailState.value,
                 onValueChange = { email ->
                     onEmailChanged.invoke(email)
                 },
-                label = { Text("Email") })
+                label = { Text("Email") },
+                maxLines = 1
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = passwordState.value,
                 onValueChange = { password ->
                     onPasswordChanged.invoke(password)
                 },
-                label = { Text("Password") })
+                label = { Text("Password") },
+                maxLines = 1
+            )
             Spacer(modifier = Modifier.height(24.dp))
             val signButtonText = if (isSignIn) "SIGN IN" else "SIGN UP"
             val signButtonCallback = if (isSignIn) onSignInClicked else onSignUpClicked
@@ -71,7 +83,9 @@ fun AuthSelectionScreen(
                         additionalTextCallback.invoke()
                     },
                 text = additionalText,
-                fontSize = 18.sp
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp
             )
         }
     }

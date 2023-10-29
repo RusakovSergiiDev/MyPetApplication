@@ -5,4 +5,6 @@ data class EnglishIrregularVerbModel(
     val pastSimple: String,
     val pastParticiple: String,
     val translateInUkrainian: String,
+    val isPopular: Boolean,
+    var index: Int = 0,
 )

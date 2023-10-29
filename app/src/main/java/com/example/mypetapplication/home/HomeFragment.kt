@@ -13,6 +13,7 @@ import com.example.mypetapplication.base.BaseFragment
 import com.example.mypetapplication.base.ScreenId
 import com.example.mypetapplication.home.compose.HomeScreen
 import com.example.mypetapplication.home.map.HomeUiMapper
+import com.example.presentationmodule.AppTheme
 
 class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
 
@@ -27,17 +28,22 @@ class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
         savedInstanceState: Bundle?
     ): View = ComposeView(this.requireContext()).apply {
         setContent {
-            HomeScreen(
-                homeMainOptionUiItemsState = viewModel.homeMainOptionsLiveData.map { items ->
-                    uiMapper.mapToUiItems(items)
-                }.observeAsState(initial = emptyList())
-            )
+            AppTheme {
+                HomeScreen(
+                    homeMainOptionUiItemsState = viewModel.homeMainOptionsLiveData.map { items ->
+                        uiMapper.mapToUiItems(items)
+                    }.observeAsState(initial = emptyList())
+                )
+            }
         }
     }
 
     override fun onSetupObservers() {
         viewModel.navigateToEnglishIrregularVerbs.observe(viewLifecycleOwner) {
             findNavController().navigate(R.id.action_homeFragment_to_englishIrregularVerbsFragment)
+        }
+        viewModel.navigateToSpanishTop200Verbs.observe(viewLifecycleOwner) {
+            findNavController().navigate(R.id.action_homeFragment_to_spanishTop200VerbsFragment)
         }
     }
 }

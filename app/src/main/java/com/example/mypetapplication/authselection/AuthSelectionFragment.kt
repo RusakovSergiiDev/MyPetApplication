@@ -11,7 +11,7 @@ import com.example.mypetapplication.base.ScreenId
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.fragment.findNavController
 import com.example.mypetapplication.R
-import com.example.mypetapplication.splash.SplashViewModel
+import com.example.presentationmodule.AppTheme
 
 class AuthSelectionFragment :
     BaseFragment<AuthSelectionViewModel>(AuthSelectionViewModel::class.java) {
@@ -25,18 +25,22 @@ class AuthSelectionFragment :
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                AuthSelectionScreen(
-                    isSignInState = viewModel.isSignInLiveData.observeAsState(initial = true),
-                    emailState = viewModel.emailLiveData.observeAsState(initial = ""),
-                    passwordState = viewModel.passwordLiveData.observeAsState(initial = ""),
-                    isSignInEnableState = viewModel.isSignInEnableLiveData.observeAsState(initial = false),
-                    onEmailChanged = { viewModel.onEmailChanged(it) },
-                    onPasswordChanged = { viewModel.onPasswordChanged(it) },
-                    onSwitchToSignIn = { viewModel.switchToSignIn() },
-                    onSwitchToSignUp = { viewModel.switchToSignUp() },
-                    onSignInClicked = { viewModel.signIn() },
-                    onSignUpClicked = { viewModel.signUp() },
-                )
+                AppTheme {
+                    AuthSelectionScreen(
+                        isSignInState = viewModel.isSignInLiveData.observeAsState(initial = true),
+                        emailState = viewModel.emailLiveData.observeAsState(initial = ""),
+                        passwordState = viewModel.passwordLiveData.observeAsState(initial = ""),
+                        isSignInEnableState = viewModel.isSignInEnableLiveData.observeAsState(
+                            initial = false
+                        ),
+                        onEmailChanged = { viewModel.onEmailChanged(it) },
+                        onPasswordChanged = { viewModel.onPasswordChanged(it) },
+                        onSwitchToSignIn = { viewModel.switchToSignIn() },
+                        onSwitchToSignUp = { viewModel.switchToSignUp() },
+                        onSignInClicked = { viewModel.signIn() },
+                        onSignUpClicked = { viewModel.signUp() },
+                    )
+                }
             }
         }
     }
