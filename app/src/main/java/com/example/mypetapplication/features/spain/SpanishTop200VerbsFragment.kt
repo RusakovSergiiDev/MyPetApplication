@@ -10,7 +10,7 @@ import androidx.lifecycle.map
 import com.example.mypetapplication.base.BaseFragment
 import com.example.mypetapplication.base.ScreenId
 import com.example.mypetapplication.features.spain.compose.SpanishTop200VerbsScreen
-import com.example.mypetapplication.features.spain.map.SpanishUiMapper
+import com.example.mypetapplication.features.spain.mappers.SpanishUiMapper
 
 class SpanishTop200VerbsFragment :
     BaseFragment<SpanishTop200VerbsViewModel>(SpanishTop200VerbsViewModel::class.java) {

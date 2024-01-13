@@ -1,4 +1,4 @@
-package com.example.mypetapplication.features.english.map
+package com.example.mypetapplication.features.english.mappers
 
 import com.example.datamodule.models.EnglishIrregularVerbModel
 import com.example.presentationmodule.data.EnglishIrregularVerbUiItem
