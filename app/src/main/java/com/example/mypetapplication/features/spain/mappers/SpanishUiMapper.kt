@@ -1,4 +1,4 @@
-package com.example.mypetapplication.features.spain.map
+package com.example.mypetapplication.features.spain.mappers
 
 import com.example.datamodule.models.SpanishVerbModel
 import com.example.presentationmodule.data.SpanishVerbUiItem

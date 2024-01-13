@@ -10,7 +10,7 @@ import androidx.lifecycle.map
 import com.example.mypetapplication.base.BaseFragment
 import com.example.mypetapplication.base.ScreenId
 import com.example.mypetapplication.features.english.compose.EnglishAllIrregularVerbsScreen
-import com.example.mypetapplication.features.english.map.EnglishUiMapper
+import com.example.mypetapplication.features.english.mappers.EnglishUiMapper
 
 class EnglishAllIrregularVerbsFragment :
     BaseFragment<EnglishAllIrregularVerbsViewModel>(EnglishAllIrregularVerbsViewModel::class.java) {
