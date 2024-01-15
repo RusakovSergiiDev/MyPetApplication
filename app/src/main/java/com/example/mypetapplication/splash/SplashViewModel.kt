@@ -2,7 +2,6 @@ package com.example.mypetapplication.splash
 
 import androidx.lifecycle.viewModelScope
 import com.example.datamodule.types.LoadStatus
-import com.example.logicmodule.ContentRepository
 import com.example.logicmodule.FirebaseRepository
 import com.example.logicmodule.usecases.GetFirebaseCurrentUserUseCase
 import com.example.mypetapplication.base.BaseViewModel

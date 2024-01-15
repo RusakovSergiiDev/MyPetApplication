@@ -90,6 +90,17 @@ class FirebaseRepository @Inject constructor() {
 
     fun getCurrentUser() = firebaseAuth.currentUser
 
+    fun trySignIn(email: String, password: String, callback: (Boolean) -> Unit) {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    callback.invoke(true)
+                } else {
+                    callback.invoke(false)
+                }
+            }
+    }
+
     fun getEnglishIrregularVerbsFlowOrLoad(statusCallback: ((LoadStatus) -> Unit)? = null): Flow<List<EnglishIrregularVerbModel>> {
         if (englishIrregularVerbsSourceFlow.value.isEmpty()) {
             loadEnglishIrregularVerbs(statusCallback)
@@ -123,7 +134,8 @@ class FirebaseRepository @Inject constructor() {
                         children.mapNotNull { it.getValue<EnglishIrregularVerbDto>() }
                     englishIrregularVerbsSourceFlow.value = result
                     statusCallback?.invoke(LoadStatus.Success)
-                    englishIrregularVerbsTaskSourceFlow.value = Task.Success(result.mapToEnglishIrregularVerbModel())
+                    englishIrregularVerbsTaskSourceFlow.value =
+                        Task.Success(result.mapToEnglishIrregularVerbModel())
                 } else {
                     statusCallback?.invoke(LoadStatus.Empty)
                     englishIrregularVerbsTaskSourceFlow.value = Task.Empty
@@ -149,7 +161,8 @@ class FirebaseRepository @Inject constructor() {
                         children.mapNotNull { it.getValue<SpanishVerbDto>() }
                     spanishTop200VerbsSourceFlow.value = result
                     statusCallback.invoke(LoadStatus.Success)
-                    spanishTop200VerbsTaskSourceFlow.value = Task.Success(result.mapSpanishVerbModel())
+                    spanishTop200VerbsTaskSourceFlow.value =
+                        Task.Success(result.mapSpanishVerbModel())
                 } else {
                     statusCallback.invoke(LoadStatus.Empty)
                     spanishTop200VerbsTaskSourceFlow.value = Task.Empty

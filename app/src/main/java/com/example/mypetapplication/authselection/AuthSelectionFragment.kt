@@ -12,7 +12,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.R
 import com.example.presentationmodule.AppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AuthSelectionFragment :
     BaseFragment<AuthSelectionViewModel>(AuthSelectionViewModel::class.java) {
 
@@ -27,10 +29,10 @@ class AuthSelectionFragment :
             setContent {
                 AppTheme {
                     AuthSelectionScreen(
-                        isSignInState = viewModel.isSignInLiveData.observeAsState(initial = true),
+                        isSignInState = viewModel.isSignInStateLiveData.observeAsState(initial = true),
                         emailState = viewModel.emailLiveData.observeAsState(initial = ""),
                         passwordState = viewModel.passwordLiveData.observeAsState(initial = ""),
-                        isSignInEnableState = viewModel.isSignInEnableLiveData.observeAsState(
+                        isSignInEnableState = viewModel.isButtonEnableLiveData.observeAsState(
                             initial = false
                         ),
                         onEmailChanged = { viewModel.onEmailChanged(it) },

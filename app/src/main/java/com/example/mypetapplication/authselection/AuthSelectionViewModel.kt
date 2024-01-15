@@ -2,29 +2,33 @@ package com.example.mypetapplication.authselection
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
+import com.example.logicmodule.usecases.TryToSignInUseCase
 import com.example.mypetapplication.base.BaseViewModel
 import com.example.mypetapplication.utils.SimpleNavigationEvent
-import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
-class AuthSelectionViewModel : BaseViewModel() {
+@HiltViewModel
+class AuthSelectionViewModel @Inject constructor(
+    private val tryToSignInUseCase: TryToSignInUseCase
+) : BaseViewModel() {
 
     // Internal param(s)
-    private val firebaseAuth = FirebaseAuth.getInstance()
-    private val isSignInSourceFlow = MutableStateFlow(true)
+    private val isSignInStateSourceFlow = MutableStateFlow(true)
     private val emailSourceFlow = MutableStateFlow("")
     private val passwordSourceFlow = MutableStateFlow("")
-    private val isSignInEnableSourceFlow =
+    private val isButtonEnableSourceFlow =
         combine(emailSourceFlow, passwordSourceFlow) { email, password ->
             email.isNotEmpty() && password.isNotEmpty()
         }
 
     // External param(s)
-    val isSignInLiveData = isSignInSourceFlow.asLiveData()
+    val isSignInStateLiveData = isSignInStateSourceFlow.asLiveData()
     val emailLiveData: LiveData<String> = emailSourceFlow.asLiveData()
     val passwordLiveData: LiveData<String> = passwordSourceFlow.asLiveData()
-    val isSignInEnableLiveData: LiveData<Boolean> = isSignInEnableSourceFlow.asLiveData()
+    val isButtonEnableLiveData: LiveData<Boolean> = isButtonEnableSourceFlow.asLiveData()
 
     // Event(s)
     val navigateToHomeEvent = SimpleNavigationEvent()
@@ -46,23 +50,18 @@ class AuthSelectionViewModel : BaseViewModel() {
     }
 
     fun switchToSignIn() {
-        isSignInSourceFlow.value = true
+        isSignInStateSourceFlow.value = true
     }
 
     fun switchToSignUp() {
-        isSignInSourceFlow.value = false
+        isSignInStateSourceFlow.value = false
     }
 
     private fun tryToSignIn() {
         val email = emailSourceFlow.value
         val password = passwordSourceFlow.value
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    navigateToHomeEvent.call()
-                } else {
-
-                }
-            }
+        tryToSignInUseCase.execute(email, password) {
+            if (it) navigateToHomeEvent.call()
+        }
     }
 }
