@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import com.example.mypetapplication.authselection.compose.AuthSelectionScreen
 import com.example.mypetapplication.base.BaseFragment
-import com.example.mypetapplication.base.ScreenId
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.fragment.findNavController
+import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.R
 import com.example.presentationmodule.AppTheme
 
@@ -17,7 +17,7 @@ class AuthSelectionFragment :
     BaseFragment<AuthSelectionViewModel>(AuthSelectionViewModel::class.java) {
 
     override val screenId: ScreenId
-        get() = ScreenId.AuthenticationSelection
+        get() = ScreenId.AuthenticationSelectionScreen
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

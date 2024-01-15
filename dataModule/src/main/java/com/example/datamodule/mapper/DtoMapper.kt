@@ -1,4 +1,4 @@
-package com.example.datamodule.map
+package com.example.datamodule.mapper
 
 import android.content.Context
 

@@ -1,4 +1,4 @@
-package com.example.mypetapplication.repo
+package com.example.datamodule.types
 
 enum class LoadStatus {
     Loading,

@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.map
+import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.base.BaseFragment
-import com.example.mypetapplication.base.ScreenId
 import com.example.mypetapplication.features.spain.compose.SpanishTop200VerbsScreen
 import com.example.mypetapplication.features.spain.mappers.SpanishUiMapper
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SpanishTop200VerbsFragment :
     BaseFragment<SpanishTop200VerbsViewModel>(SpanishTop200VerbsViewModel::class.java) {
 
@@ -19,7 +21,7 @@ class SpanishTop200VerbsFragment :
         get() = SpanishUiMapper()
 
     override val screenId: ScreenId
-        get() = ScreenId.SpanishTop200Verbs
+        get() = ScreenId.SpanishTop200VerbsScreen
 
     override fun onCreateView(
         inflater: LayoutInflater,

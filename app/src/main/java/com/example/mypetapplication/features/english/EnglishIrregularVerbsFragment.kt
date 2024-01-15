@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.fragment.findNavController
+import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.R
 import com.example.mypetapplication.base.BaseFragment
-import com.example.mypetapplication.base.ScreenId
 import com.example.mypetapplication.features.english.compose.EnglishIrregularVerbsScreen
 
 class EnglishIrregularVerbsFragment :
     BaseFragment<EnglishIrregularVerbsViewModel>(EnglishIrregularVerbsViewModel::class.java) {
 
     override val screenId: ScreenId
-        get() = ScreenId.EnglishIrregularVerbs
+        get() = ScreenId.EnglishIrregularVerbsScreen
 
     override fun onCreateView(
         inflater: LayoutInflater,

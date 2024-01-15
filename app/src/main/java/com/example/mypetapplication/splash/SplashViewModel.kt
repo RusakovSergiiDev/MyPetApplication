@@ -1,36 +1,49 @@
 package com.example.mypetapplication.splash
 
 import androidx.lifecycle.viewModelScope
+import com.example.datamodule.types.LoadStatus
+import com.example.logicmodule.ContentRepository
+import com.example.logicmodule.FirebaseRepository
+import com.example.logicmodule.usecases.GetFirebaseCurrentUserUseCase
 import com.example.mypetapplication.base.BaseViewModel
-import com.example.mypetapplication.repo.FirebaseRepo
-import com.example.mypetapplication.repo.LoadStatus
 import com.example.mypetapplication.utils.SimpleNavigationEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SplashViewModel : BaseViewModel() {
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    private val firebaseRepository: FirebaseRepository,
+    private val getFirebaseCurrentUserUseCase: GetFirebaseCurrentUserUseCase
+) : BaseViewModel() {
 
     // Internal param(s)
-    private val firebaseRepo = FirebaseRepo
     private val isTimerFinishedSourceFlow = MutableStateFlow(false)
     private val isAuthenticationCompletedSourceFlow = MutableStateFlow(false)
     private val isEnglishDataLoadedSourceFlow = MutableStateFlow(false)
     private val isSpanishDataLoadedSourceFlow = MutableStateFlow(false)
+    private val isAllNecessaryDataLoadedFlow =
+        combine(
+            isEnglishDataLoadedSourceFlow,
+            isSpanishDataLoadedSourceFlow
+        ) { isEnglishDataLoaded, isSpanishDataLoaded ->
+            isEnglishDataLoaded && isSpanishDataLoaded
+        }
     private val authStatusSourceFlow =
         combine(
             isTimerFinishedSourceFlow,
             isAuthenticationCompletedSourceFlow,
-            isEnglishDataLoadedSourceFlow,
-            isSpanishDataLoadedSourceFlow
-        ) { isTimerFinished, isAuthenticationCompleted, isEnglishDataLoaded, isSpanishDataLoaded ->
+            isAllNecessaryDataLoadedFlow,
+        ) { isTimerFinished, isAuthenticationCompleted, isAllNecessaryDataLoaded ->
             AuthStatus(
                 isTimerFinished,
                 isAuthenticationCompleted,
-                isEnglishDataLoaded && isSpanishDataLoaded,
+                isAllNecessaryDataLoaded,
             )
         }
 
@@ -60,16 +73,16 @@ class SplashViewModel : BaseViewModel() {
     }
 
     private fun checkIsAuthenticationCompleted() {
-        val currentUser = firebaseRepo.getCurrentUser()
+        val currentUser = getFirebaseCurrentUserUseCase.execute()
         isAuthenticationCompletedSourceFlow.value = currentUser != null
     }
 
     private fun loadData() {
-        firebaseRepo.loadEnglishIrregularVerbs { loadStatus ->
+        firebaseRepository.loadEnglishIrregularVerbs { loadStatus ->
             isEnglishDataLoadedSourceFlow.value =
                 loadStatus == LoadStatus.Success || loadStatus == LoadStatus.Empty
         }
-        firebaseRepo.loadSpanishVerbs { loadStatus ->
+        firebaseRepository.loadSpanishVerbs { loadStatus ->
             isSpanishDataLoadedSourceFlow.value =
                 loadStatus == LoadStatus.Success || loadStatus == LoadStatus.Empty
         }

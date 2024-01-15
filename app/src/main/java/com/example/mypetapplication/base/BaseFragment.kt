@@ -2,12 +2,15 @@ package com.example.mypetapplication.base
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.datamodule.types.ScreenId
 
-abstract class BaseFragment<VM : BaseViewModel>(private val viewModelJavaClass: Class<VM>) :
-    Fragment() {
+abstract class BaseFragment<VM : BaseViewModel>(
+    private val viewModelJavaClass: Class<VM>
+) : Fragment() {
 
     abstract val screenId: ScreenId?
 

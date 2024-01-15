@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.map
+import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.base.BaseFragment
-import com.example.mypetapplication.base.ScreenId
 import com.example.mypetapplication.features.english.compose.EnglishAllIrregularVerbsScreen
 import com.example.mypetapplication.features.english.mappers.EnglishUiMapper
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EnglishAllIrregularVerbsFragment :
     BaseFragment<EnglishAllIrregularVerbsViewModel>(EnglishAllIrregularVerbsViewModel::class.java) {
 
@@ -19,7 +21,7 @@ class EnglishAllIrregularVerbsFragment :
         get() = EnglishUiMapper()
 
     override val screenId: ScreenId
-        get() = ScreenId.EnglishAllIrregularVerbs
+        get() = ScreenId.EnglishAllIrregularVerbsScreen
 
     override fun onCreateView(
         inflater: LayoutInflater,
