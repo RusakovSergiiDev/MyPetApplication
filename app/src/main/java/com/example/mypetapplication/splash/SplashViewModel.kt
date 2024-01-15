@@ -1,9 +1,8 @@
 package com.example.mypetapplication.splash
 
 import androidx.lifecycle.viewModelScope
-import com.example.datamodule.types.LoadStatus
-import com.example.logicmodule.FirebaseRepository
 import com.example.logicmodule.usecases.GetFirebaseCurrentUserUseCase
+import com.example.logicmodule.usecases.GetInitialDataUseCase
 import com.example.mypetapplication.base.BaseViewModel
 import com.example.mypetapplication.utils.SimpleNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,22 +16,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val firebaseRepository: FirebaseRepository,
-    private val getFirebaseCurrentUserUseCase: GetFirebaseCurrentUserUseCase
+    private val getFirebaseCurrentUserUseCase: GetFirebaseCurrentUserUseCase,
+    private val getInitialDataUseCase: GetInitialDataUseCase
 ) : BaseViewModel() {
 
     // Internal param(s)
     private val isTimerFinishedSourceFlow = MutableStateFlow(false)
     private val isAuthenticationCompletedSourceFlow = MutableStateFlow(false)
-    private val isEnglishDataLoadedSourceFlow = MutableStateFlow(false)
-    private val isSpanishDataLoadedSourceFlow = MutableStateFlow(false)
-    private val isAllNecessaryDataLoadedFlow =
-        combine(
-            isEnglishDataLoadedSourceFlow,
-            isSpanishDataLoadedSourceFlow
-        ) { isEnglishDataLoaded, isSpanishDataLoaded ->
-            isEnglishDataLoaded && isSpanishDataLoaded
-        }
+    private val isAllNecessaryDataLoadedFlow = MutableStateFlow(false)
     private val authStatusSourceFlow =
         combine(
             isTimerFinishedSourceFlow,
@@ -61,7 +52,7 @@ class SplashViewModel @Inject constructor(
 
         startTimer()
         checkIsAuthenticationCompleted()
-        loadData()
+        loadInitialData()
     }
 
     private fun startTimer() {
@@ -76,14 +67,11 @@ class SplashViewModel @Inject constructor(
         isAuthenticationCompletedSourceFlow.value = currentUser != null
     }
 
-    private fun loadData() {
-        firebaseRepository.loadEnglishIrregularVerbs { loadStatus ->
-            isEnglishDataLoadedSourceFlow.value =
-                loadStatus == LoadStatus.Success || loadStatus == LoadStatus.Empty
-        }
-        firebaseRepository.loadSpanishVerbs { loadStatus ->
-            isSpanishDataLoadedSourceFlow.value =
-                loadStatus == LoadStatus.Success || loadStatus == LoadStatus.Empty
+    private fun loadInitialData() {
+        viewModelScope.launch {
+            getInitialDataUseCase.execute().collect {
+                isAllNecessaryDataLoadedFlow.value = it
+            }
         }
     }
 
