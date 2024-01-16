@@ -36,8 +36,8 @@ fun HomeScreen(
             if (items.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            homeMainOptionUiItemsState.value.forEach {
-                HomeMainOptionItemCell(it)
+            homeMainOptionUiItemsState.value.forEach { item ->
+                HomeMainOptionItemCell(item)
             }
             if (items.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))

@@ -8,9 +8,13 @@ import javax.inject.Inject
 
 class GetFeatureListUseCase @Inject constructor(
     private val contentRepository: ContentRepository
-) {
+): IUseCase<List<FeatureDto>> {
 
-    suspend fun execute(): Flow<Task<List<FeatureDto>>> {
+    override suspend fun execute(): Flow<Task<List<FeatureDto>>> {
          return contentRepository.getFeatureListTaskFlowOrLoad()
+    }
+
+    override suspend fun retry() {
+        contentRepository.loadFeatureList()
     }
 }

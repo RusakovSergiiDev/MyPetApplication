@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_homeFragment_to_spanishTop200VerbsFragment"
             app:destination="@id/spanish_top_200_verbs_navigation" />
+        <action
+            android:id="@+id/action_homeFragment_to_englishRulesFragment"
+            app:destination="@id/english_rules_navigation" />
     </fragment>
 
     <fragment
@@ -42,5 +45,6 @@
 
     <include app:graph="@navigation/english_irregular_verbs_navigation" />
     <include app:graph="@navigation/spanish_top_200_verbs_navigation" />
+    <include app:graph="@navigation/english_rules_navigation" />
 
 </navigation>

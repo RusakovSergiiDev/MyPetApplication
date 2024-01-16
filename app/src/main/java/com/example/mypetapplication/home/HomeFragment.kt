@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.map
-import androidx.navigation.fragment.findNavController
 import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.R
 import com.example.mypetapplication.base.BaseFragment
 import com.example.mypetapplication.home.compose.HomeScreen
 import com.example.mypetapplication.home.map.HomeUiMapper
+import com.example.mypetapplication.utils.navigate
 import com.example.presentationmodule.AppTheme
 
 class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
@@ -39,11 +39,14 @@ class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
     }
 
     override fun onSetupObservers() {
-        viewModel.navigateToEnglishIrregularVerbs.observe(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_homeFragment_to_englishIrregularVerbsFragment)
+        viewModel.navigateToEnglishRulesEvent.observe(viewLifecycleOwner) {
+            navigate(R.id.action_homeFragment_to_englishRulesFragment)
         }
-        viewModel.navigateToSpanishTop200Verbs.observe(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_homeFragment_to_spanishTop200VerbsFragment)
+        viewModel.navigateToEnglishIrregularVerbsEvent.observe(viewLifecycleOwner) {
+            navigate(R.id.action_homeFragment_to_englishIrregularVerbsFragment)
+        }
+        viewModel.navigateToSpanishTop200VerbsEvent.observe(viewLifecycleOwner) {
+            navigate(R.id.action_homeFragment_to_spanishTop200VerbsFragment)
         }
     }
 }

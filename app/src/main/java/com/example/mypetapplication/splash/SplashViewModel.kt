@@ -1,7 +1,6 @@
 package com.example.mypetapplication.splash
 
 import androidx.lifecycle.viewModelScope
-import com.example.datamodule.types.Task
 import com.example.logicmodule.usecases.GetFeatureListUseCase
 import com.example.logicmodule.usecases.firebase.GetFirebaseCurrentUserUseCase
 import com.example.logicmodule.usecases.firebase.GetFirebaseInitialDataUseCase
@@ -52,7 +51,7 @@ class SplashViewModel @Inject constructor(
             .onEach { authStatus ->
                 if (!authStatus.isTimerFinished) return@onEach
                 else if (!authStatus.isAuthenticationCompleted) navigateToAuthSelectionEvent.call()
-                else if (authStatus.isFirebaseDataLoaded && authStatus.isServerDataLoaded) navigateToHomeEvent.call()
+                else if (authStatus.isFirebaseDataLoaded && !authStatus.isServerDataLoaded) navigateToHomeEvent.call()
             }
             .launchIn(viewModelScope)
 
@@ -82,11 +81,15 @@ class SplashViewModel @Inject constructor(
                 isAllNecessaryFirebaseDataLoadedFlow.value = it
             }
         }
-        viewModelScope.launch {
-            getFeatureListUseCase.execute().collect {
-                isAllNecessaryServerDataLoadedFlow.value = it is Task.Success
+        executeUseCase(
+            useCase = getFeatureListUseCase,
+            onSuccess = {
+                isAllNecessaryServerDataLoadedFlow.value = true
+            },
+            onEmpty = {
+                isAllNecessaryServerDataLoadedFlow.value = true
             }
-        }
+        )
     }
 
     data class AuthStatus(

@@ -1,5 +1,6 @@
 package com.example.logicmodule.di
 
+import com.example.logicmodule.network.EnglishService
 import com.example.logicmodule.network.FeatureService
 import dagger.Module
 import dagger.Provides
@@ -37,5 +38,11 @@ object NetworkModule {
     @Singleton
     fun provideFeatureService(retrofit: Retrofit): FeatureService {
         return retrofit.create(FeatureService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEnglishService(retrofit: Retrofit): EnglishService {
+        return retrofit.create(EnglishService::class.java)
     }
 }
