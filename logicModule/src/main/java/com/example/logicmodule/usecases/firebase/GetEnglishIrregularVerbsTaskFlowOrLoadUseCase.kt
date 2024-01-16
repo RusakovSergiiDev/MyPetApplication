@@ -1,4 +1,4 @@
-package com.example.logicmodule.usecases
+package com.example.logicmodule.usecases.firebase
 
 import com.example.datamodule.models.EnglishIrregularVerbModel
 import com.example.datamodule.types.Task

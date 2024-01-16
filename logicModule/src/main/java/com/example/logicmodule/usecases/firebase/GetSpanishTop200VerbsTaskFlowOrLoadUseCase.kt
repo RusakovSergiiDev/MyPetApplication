@@ -1,4 +1,4 @@
-package com.example.logicmodule.usecases
+package com.example.logicmodule.usecases.firebase
 
 import com.example.datamodule.models.SpanishVerbModel
 import com.example.datamodule.types.Task
@@ -6,7 +6,7 @@ import com.example.logicmodule.FirebaseRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GeSpanishTop200VerbsTaskFlowOrLoadUseCase @Inject constructor(
+class GetSpanishTop200VerbsTaskFlowOrLoadUseCase @Inject constructor(
     private val firebaseRepository: FirebaseRepository
 ) {
 

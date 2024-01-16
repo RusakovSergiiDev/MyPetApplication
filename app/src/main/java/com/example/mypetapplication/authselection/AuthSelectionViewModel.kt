@@ -2,7 +2,7 @@ package com.example.mypetapplication.authselection
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
-import com.example.logicmodule.usecases.TryToSignInUseCase
+import com.example.logicmodule.usecases.firebase.TryToSignInUseCase
 import com.example.mypetapplication.base.BaseViewModel
 import com.example.mypetapplication.utils.SimpleNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel

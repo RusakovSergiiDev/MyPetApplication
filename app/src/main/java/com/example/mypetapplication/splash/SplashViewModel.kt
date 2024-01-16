@@ -1,8 +1,10 @@
 package com.example.mypetapplication.splash
 
 import androidx.lifecycle.viewModelScope
-import com.example.logicmodule.usecases.GetFirebaseCurrentUserUseCase
-import com.example.logicmodule.usecases.GetInitialDataUseCase
+import com.example.datamodule.types.Task
+import com.example.logicmodule.usecases.GetFeatureListUseCase
+import com.example.logicmodule.usecases.firebase.GetFirebaseCurrentUserUseCase
+import com.example.logicmodule.usecases.firebase.GetFirebaseInitialDataUseCase
 import com.example.mypetapplication.base.BaseViewModel
 import com.example.mypetapplication.utils.SimpleNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,23 +19,27 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val getFirebaseCurrentUserUseCase: GetFirebaseCurrentUserUseCase,
-    private val getInitialDataUseCase: GetInitialDataUseCase
+    private val getFirebaseInitialDataUseCase: GetFirebaseInitialDataUseCase,
+    private val getFeatureListUseCase: GetFeatureListUseCase
 ) : BaseViewModel() {
 
     // Internal param(s)
     private val isTimerFinishedSourceFlow = MutableStateFlow(false)
     private val isAuthenticationCompletedSourceFlow = MutableStateFlow(false)
-    private val isAllNecessaryDataLoadedFlow = MutableStateFlow(false)
+    private val isAllNecessaryFirebaseDataLoadedFlow = MutableStateFlow(false)
+    private val isAllNecessaryServerDataLoadedFlow = MutableStateFlow(false)
     private val authStatusSourceFlow =
         combine(
             isTimerFinishedSourceFlow,
             isAuthenticationCompletedSourceFlow,
-            isAllNecessaryDataLoadedFlow,
-        ) { isTimerFinished, isAuthenticationCompleted, isAllNecessaryDataLoaded ->
+            isAllNecessaryFirebaseDataLoadedFlow,
+            isAllNecessaryServerDataLoadedFlow,
+        ) { isTimerFinished, isAuthenticationCompleted, isAllNecessaryDataLoaded, isAllNecessaryServerDataLoaded ->
             AuthStatus(
                 isTimerFinished,
                 isAuthenticationCompleted,
                 isAllNecessaryDataLoaded,
+                isAllNecessaryServerDataLoaded
             )
         }
 
@@ -46,13 +52,12 @@ class SplashViewModel @Inject constructor(
             .onEach { authStatus ->
                 if (!authStatus.isTimerFinished) return@onEach
                 else if (!authStatus.isAuthenticationCompleted) navigateToAuthSelectionEvent.call()
-                else if (authStatus.isDataLoaded) navigateToHomeEvent.call()
+                else if (authStatus.isFirebaseDataLoaded && authStatus.isServerDataLoaded) navigateToHomeEvent.call()
             }
             .launchIn(viewModelScope)
 
         startTimer()
         checkIsAuthenticationCompleted()
-        loadInitialData()
     }
 
     private fun startTimer() {
@@ -64,13 +69,22 @@ class SplashViewModel @Inject constructor(
 
     private fun checkIsAuthenticationCompleted() {
         val currentUser = getFirebaseCurrentUserUseCase.execute()
-        isAuthenticationCompletedSourceFlow.value = currentUser != null
+        val isSignedUp = currentUser != null
+        isAuthenticationCompletedSourceFlow.value = isSignedUp
+        if (isSignedUp) {
+            loadInitialData()
+        }
     }
 
     private fun loadInitialData() {
         viewModelScope.launch {
-            getInitialDataUseCase.execute().collect {
-                isAllNecessaryDataLoadedFlow.value = it
+            getFirebaseInitialDataUseCase.execute().collect {
+                isAllNecessaryFirebaseDataLoadedFlow.value = it
+            }
+        }
+        viewModelScope.launch {
+            getFeatureListUseCase.execute().collect {
+                isAllNecessaryServerDataLoadedFlow.value = it is Task.Success
             }
         }
     }
@@ -78,6 +92,7 @@ class SplashViewModel @Inject constructor(
     data class AuthStatus(
         val isTimerFinished: Boolean,
         val isAuthenticationCompleted: Boolean,
-        val isDataLoaded: Boolean
+        val isFirebaseDataLoaded: Boolean,
+        val isServerDataLoaded: Boolean
     )
 }

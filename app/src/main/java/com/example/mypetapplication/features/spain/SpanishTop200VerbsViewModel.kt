@@ -4,7 +4,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.datamodule.models.SpanishVerbModel
 import com.example.datamodule.types.Task
-import com.example.logicmodule.usecases.GeSpanishTop200VerbsTaskFlowOrLoadUseCase
+import com.example.logicmodule.usecases.firebase.GetSpanishTop200VerbsTaskFlowOrLoadUseCase
 import com.example.mypetapplication.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SpanishTop200VerbsViewModel @Inject constructor(
-    private val getSpanishTop200VerbsTaskFlowOrLoadUseCase: GeSpanishTop200VerbsTaskFlowOrLoadUseCase
+    private val getSpanishTop200VerbsTaskFlowOrLoadUseCase: GetSpanishTop200VerbsTaskFlowOrLoadUseCase
 ) : BaseViewModel() {
 
     // Internal param(s)
