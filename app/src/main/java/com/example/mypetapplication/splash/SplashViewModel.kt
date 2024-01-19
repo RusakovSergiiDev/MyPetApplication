@@ -1,7 +1,8 @@
 package com.example.mypetapplication.splash
 
 import androidx.lifecycle.viewModelScope
-import com.example.logicmodule.usecases.GetFeatureListUseCase
+import com.example.datamodule.types.isSuccessOrEmpty
+import com.example.logicmodule.usecases.GetFeatureListFlowTaskUseCase
 import com.example.logicmodule.usecases.firebase.GetFirebaseCurrentUserUseCase
 import com.example.logicmodule.usecases.firebase.GetFirebaseInitialDataUseCase
 import com.example.mypetapplication.base.BaseViewModel
@@ -19,7 +20,7 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val getFirebaseCurrentUserUseCase: GetFirebaseCurrentUserUseCase,
     private val getFirebaseInitialDataUseCase: GetFirebaseInitialDataUseCase,
-    private val getFeatureListUseCase: GetFeatureListUseCase
+    private val getFeatureListUseCase: GetFeatureListFlowTaskUseCase
 ) : BaseViewModel() {
 
     // Internal param(s)
@@ -81,15 +82,11 @@ class SplashViewModel @Inject constructor(
                 isAllNecessaryFirebaseDataLoadedFlow.value = it
             }
         }
-        executeUseCase(
-            useCase = getFeatureListUseCase,
-            onSuccess = {
-                isAllNecessaryServerDataLoadedFlow.value = true
-            },
-            onEmpty = {
-                isAllNecessaryServerDataLoadedFlow.value = true
+        viewModelScope.launch {
+            executeAndWrapUseCase(getFeatureListUseCase).collect { task ->
+                isAllNecessaryServerDataLoadedFlow.value = task.isSuccessOrEmpty()
             }
-        )
+        }
     }
 
     data class AuthStatus(

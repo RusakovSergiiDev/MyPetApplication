@@ -3,7 +3,8 @@ package com.example.mypetapplication.features.english
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.example.datamodule.models.english.EnglishRulesModel
-import com.example.logicmodule.usecases.english.GetEnglishRulesTaskFlowOrLoadUseCase
+import com.example.logicmodule.usecases.GetTestDataTaskFlowOrLoadWithErrorUseCase
+import com.example.logicmodule.usecases.english.GetEnglishRulesTaskFlowOrLoadFlowTaskUseCase
 import com.example.presentationmodule.R
 import com.example.mypetapplication.base.BaseContentViewModel
 import com.example.mypetapplication.features.english.data.EnglishRulesScreenContent
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EnglishRulesViewModel @Inject constructor(
-    private val getEnglishRulesTaskFlowOrLoadUseCase: GetEnglishRulesTaskFlowOrLoadUseCase,
+    private val getEnglishRulesTaskFlowOrLoadUseCase: GetEnglishRulesTaskFlowOrLoadFlowTaskUseCase,
+    private val getTestDataTaskFlowOrLoadWithErrorUseCase: GetTestDataTaskFlowOrLoadWithErrorUseCase,
 ) : BaseContentViewModel<EnglishRulesScreenContent>() {
 
     // Internal param(s)
@@ -32,11 +34,10 @@ class EnglishRulesViewModel @Inject constructor(
         get() = R.string.label_englishRules
 
     init {
-        executeUseCase(
-            useCase = getEnglishRulesTaskFlowOrLoadUseCase,
-            onSuccess = { data ->
-                englishRulesSourceFlow.value = data
-            })
+        executeForSuccessUseCase(getTestDataTaskFlowOrLoadWithErrorUseCase)
+//        executeForSuccessUseCase(getEnglishRulesTaskFlowOrLoadUseCase) { data ->
+//            englishRulesSourceFlow.value = data
+//        }
         prepareScreenContentSource()
     }
 

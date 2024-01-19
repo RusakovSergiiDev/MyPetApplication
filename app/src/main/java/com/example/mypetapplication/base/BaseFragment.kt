@@ -46,7 +46,8 @@ abstract class BaseFragment<VM : BaseViewModel>(
                 BaseComposeScreen(
                     onBackClicked = { viewModel.onBackClicked() },
                     onRetryClicked = { viewModel.onRetryClicked() },
-                    isLoading = viewModel.isLoadingLiveData,
+                    isShowLoading = viewModel.isLoadingLiveData,
+                    isShowRetry = viewModel.isContentInErrorStateLiveData,
                     contentLiveData = contentLiveData,
                     content = { source ->
                         content(source)

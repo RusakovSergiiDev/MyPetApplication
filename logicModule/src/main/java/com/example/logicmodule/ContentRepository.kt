@@ -1,6 +1,5 @@
 package com.example.logicmodule
 
-import android.util.Log
 import com.example.datamodule.dto.server.FeatureDto
 import com.example.datamodule.mapper.mapToEnglishRulesModel
 import com.example.datamodule.models.english.EnglishRulesModel
@@ -10,14 +9,7 @@ import com.example.logicmodule.network.EnglishService
 import com.example.logicmodule.network.FeatureService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class ContentRepository @Inject constructor(
@@ -26,11 +18,13 @@ class ContentRepository @Inject constructor(
 ) {
 
     // Internal param(s)
+    private val testDataTaskSourceFlow = MutableStateFlow<Task<Unit>>(Task.Initial)
     private val featureListTaskSourceFlow = MutableStateFlow<Task<List<FeatureDto>>>(Task.Initial)
     private val featureListSourceFlow = MutableStateFlow<List<FeatureDto>>(emptyList())
     private val englishRulesTaskSourceFlow = MutableStateFlow<Task<EnglishRulesModel>>(Task.Initial)
 
     // External param(s)
+    val testDataTaskFlow: Flow<Task<Unit>> = testDataTaskSourceFlow
     val featureListTaskFlow: Flow<Task<List<FeatureDto>>> = featureListTaskSourceFlow
     val featureListFlow: Flow<List<FeatureDto>> = featureListSourceFlow
     val englishRulesTaskFlow: Flow<Task<EnglishRulesModel>> = englishRulesTaskSourceFlow
@@ -68,6 +62,39 @@ class ContentRepository @Inject constructor(
             englishRulesTaskSourceFlow.value = (Task.Success(englishRulesMapped))
         } catch (e: Exception) {
             englishRulesTaskSourceFlow.value = (Task.Error(e.message.orEmpty()))
+        }
+    }
+
+    suspend fun getTestDataTaskFlowOrLoad(withError: Boolean = false): Flow<Task<Unit>> {
+        if (testDataTaskSourceFlow.value.isInitial()) {
+            if (withError) {
+                loadTestDataWithError()
+            } else {
+                loadTestData()
+            }
+        }
+        return testDataTaskFlow
+    }
+
+    suspend fun loadTestData() {
+        testDataTaskSourceFlow.value = Task.Loading
+        try {
+            delay(500)
+            testDataTaskSourceFlow.value = (Task.Success(Unit))
+        } catch (e: Exception) {
+            testDataTaskSourceFlow.value = (Task.Error(e.message.orEmpty()))
+        }
+    }
+
+    suspend fun loadTestDataWithError() {
+        testDataTaskSourceFlow.value = Task.Loading
+        try {
+            delay(500)
+            throw NullPointerException("Hardcoded NPE")
+            delay(500)
+            testDataTaskSourceFlow.value = (Task.Success(Unit))
+        } catch (e: Exception) {
+            testDataTaskSourceFlow.value = (Task.Error(e.message.orEmpty()))
         }
     }
 }

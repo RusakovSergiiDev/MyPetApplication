@@ -15,3 +15,11 @@ fun <T> Task<T>.isSuccess(): Boolean {
 fun <T> Task<T>.isInitial(): Boolean {
     return this is Task.Initial
 }
+
+fun <T> Task<T>.isEmpty(): Boolean {
+    return this is Task.Empty
+}
+
+fun <T> Task<T>.isSuccessOrEmpty(): Boolean {
+    return isSuccess() || isEmpty()
+}

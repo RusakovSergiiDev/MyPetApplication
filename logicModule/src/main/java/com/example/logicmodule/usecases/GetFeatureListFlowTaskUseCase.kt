@@ -6,9 +6,9 @@ import com.example.logicmodule.ContentRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetFeatureListUseCase @Inject constructor(
+class GetFeatureListFlowTaskUseCase @Inject constructor(
     private val contentRepository: ContentRepository
-): IUseCase<List<FeatureDto>> {
+): IFlowTaskUseCase<List<FeatureDto>> {
 
     override suspend fun execute(): Flow<Task<List<FeatureDto>>> {
          return contentRepository.getFeatureListTaskFlowOrLoad()

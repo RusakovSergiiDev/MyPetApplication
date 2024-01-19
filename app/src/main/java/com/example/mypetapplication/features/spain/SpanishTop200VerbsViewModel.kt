@@ -2,7 +2,7 @@ package com.example.mypetapplication.features.spain
 
 import androidx.lifecycle.asLiveData
 import com.example.datamodule.models.SpanishVerbModel
-import com.example.logicmodule.usecases.firebase.GetSpanishTop200VerbsTaskFlowOrLoadUseCase
+import com.example.logicmodule.usecases.firebase.GetSpanishTop200VerbsTaskFlowOrLoadFlowTaskUseCase
 import com.example.presentationmodule.R
 import com.example.mypetapplication.base.BaseContentViewModel
 import com.example.mypetapplication.features.spain.mappers.SpanishUiMapper
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SpanishTop200VerbsViewModel @Inject constructor(
-    private val getSpanishTop200VerbsTaskFlowOrLoadUseCase: GetSpanishTop200VerbsTaskFlowOrLoadUseCase,
+    private val getSpanishTop200VerbsTaskFlowOrLoadUseCase: GetSpanishTop200VerbsTaskFlowOrLoadFlowTaskUseCase,
     spanishUiMapper: SpanishUiMapper
 ) : BaseContentViewModel<SpanishTop200VerbsScreenContent>() {
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,7 +31,8 @@ import com.example.presentationmodule.AppTheme
 fun <T : IBaseScreenContent> BaseComposeScreen(
     onBackClicked: (() -> Unit)? = null,
     onRetryClicked: (() -> Unit)? = null,
-    isLoading: LiveData<Boolean>,
+    isShowLoading: LiveData<Boolean>,
+    isShowRetry: LiveData<Boolean>,
     contentLiveData: LiveData<BaseFullComposeScreenContent<T>>,
     content: @Composable (LiveData<BaseFullComposeScreenContent<T>>) -> Unit
 ) {
@@ -74,20 +76,21 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                         .fillMaxSize()
                 ) {
                     content(contentLiveData)
-                    val isShowLoading = isLoading.observeAsState().value ?: false
-                    if (isShowLoading) {
+                    val isLoadingState = isShowLoading.observeAsState().value ?: false
+                    val isRetryState = isShowRetry.observeAsState().value ?: false
+                    if (isLoadingState) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .size(50.dp)
                                 .align(Alignment.Center)
                         )
-                    } else {
-//                        Button(
-//                            onClick = { onRetryClicked?.invoke() },
-//                            modifier = Modifier.align(Alignment.Center)
-//                        ) {
-//                            Text("Retry")
-//                        }
+                    } else if (isRetryState) {
+                        Button(
+                            onClick = { onRetryClicked?.invoke() },
+                            modifier = Modifier.align(Alignment.Center)
+                        ) {
+                            Text("Retry")
+                        }
                     }
                 }
             }
