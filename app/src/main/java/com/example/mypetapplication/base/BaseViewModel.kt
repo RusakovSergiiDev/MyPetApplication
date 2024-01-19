@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 open class BaseViewModel : ViewModel() {
@@ -19,10 +20,11 @@ open class BaseViewModel : ViewModel() {
     private val isContentLoadingSourceFlow = MutableStateFlow(false)
 
     // External param(s)
-    val isContentLoadingLiveData: LiveData<Boolean> = isContentLoadingSourceFlow.asLiveData()
+    val isLoadingLiveData: LiveData<Boolean> = isContentLoadingSourceFlow.asLiveData()
 
     // Event(s)
     val navigationBackEvent = SimpleNavigationEvent()
+    val logOutEvent = SimpleNavigationEvent()
     val showErrorEvent = SingleLiveData<String>()
 
     private val customScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
@@ -36,14 +38,22 @@ open class BaseViewModel : ViewModel() {
         navigationBackEvent.call()
     }
 
+    fun onLogOutClicked() {
+        logOutEvent.call()
+    }
+
+    open fun onRetryClicked() {
+
+    }
+
     fun <T> executeUseCase(
         useCase: IUseCase<T>,
         onSuccess: ((T) -> Unit)? = null,
-        onEmpty: (() -> Unit)? = null
+        onEmpty: (() -> Unit)? = null,
     ) {
         handleLoading(true)
         customScope.launch {
-            useCase.execute().collect { task ->
+            useCase.execute().flowOn(Dispatchers.IO).collect { task ->
                 when (task) {
                     is Task.Success -> {
                         handleLoading(false)

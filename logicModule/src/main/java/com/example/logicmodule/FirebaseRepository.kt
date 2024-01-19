@@ -64,7 +64,7 @@ class FirebaseRepository @Inject constructor() {
         return spanishTop200VerbsTaskSourceFlow
     }
 
-    private fun loadEnglishIrregularVerbs() {
+    fun loadEnglishIrregularVerbs() {
         loadDataFromFirebase<EnglishIrregularVerbDto, EnglishIrregularVerbModel>(
             reference = englishAllIrregularVerbsReference,
             mapper = { it.mapToEnglishIrregularVerbModel() },
@@ -77,7 +77,7 @@ class FirebaseRepository @Inject constructor() {
         )
     }
 
-    private fun loadSpanishVerbs() {
+    fun loadSpanishVerbs() {
         loadDataFromFirebase<SpanishVerbDto, SpanishVerbModel>(
             reference = spanishTop200VerbsReference,
             mapper = { it.mapSpanishVerbModel() },

@@ -32,7 +32,8 @@ class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
                 HomeScreen(
                     homeMainOptionUiItemsState = viewModel.homeMainOptionsLiveData.map { items ->
                         uiMapper.mapToUiItems(items)
-                    }.observeAsState(initial = emptyList())
+                    }.observeAsState(initial = emptyList()),
+                    onLogOutClicked = { viewModel.onLogOutClicked() }
                 )
             }
         }

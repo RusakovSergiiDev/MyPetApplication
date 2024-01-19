@@ -2,7 +2,10 @@ package com.example.mypetapplication.base
 
 import android.os.Bundle
 import android.view.View
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.datamodule.types.ScreenId
@@ -28,6 +31,27 @@ abstract class BaseFragment<VM : BaseViewModel>(
 
         viewModel.navigationBackEvent.observe(viewLifecycleOwner) {
             findNavController().popBackStack()
+        }
+        viewModel.logOutEvent.observe(viewLifecycleOwner) {
+            // navigate(R.navigation.auth_navigation)
+        }
+    }
+
+    protected fun <T : IBaseScreenContent> createCommonComposeScreen(
+        contentLiveData: LiveData<BaseFullComposeScreenContent<T>>,
+        content: @Composable (LiveData<BaseFullComposeScreenContent<T>>) -> Unit
+    ): ComposeView {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BaseComposeScreen(
+                    onBackClicked = { viewModel.onBackClicked() },
+                    onRetryClicked = { viewModel.onRetryClicked() },
+                    isLoading = viewModel.isLoadingLiveData,
+                    contentLiveData = contentLiveData,
+                    content = { source ->
+                        content(source)
+                    })
+            }
         }
     }
 }

@@ -23,14 +23,20 @@
         android:id="@+id/homeFragment"
         android:name="com.example.mypetapplication.home.HomeFragment">
         <action
+            android:id="@+id/action_homeFragment_to_englishRulesFragment"
+            app:destination="@id/english_rules_navigation"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
             android:id="@+id/action_homeFragment_to_englishIrregularVerbsFragment"
-            app:destination="@id/english_irregular_verbs_navigation" />
+            app:destination="@id/english_irregular_verbs_navigation"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_homeFragment_to_spanishTop200VerbsFragment"
-            app:destination="@id/spanish_top_200_verbs_navigation" />
-        <action
-            android:id="@+id/action_homeFragment_to_englishRulesFragment"
-            app:destination="@id/english_rules_navigation" />
+            app:destination="@id/spanish_top_200_verbs_navigation"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment

@@ -2,17 +2,18 @@ package com.example.mypetapplication.features.spain.mappers
 
 import com.example.datamodule.models.SpanishVerbModel
 import com.example.presentationmodule.data.SpanishVerbUiItem
+import javax.inject.Inject
 
-class SpanishUiMapper {
+class SpanishUiMapper @Inject constructor() {
 
-    private fun SpanishVerbModel.mapToUiItem(): SpanishVerbUiItem =
+    fun mapToUiItem(item: SpanishVerbModel): SpanishVerbUiItem =
         SpanishVerbUiItem(
-            index = index,
-            spanish = this.spanish,
-            ukrainian = this.ukrainian
+            index = item.index,
+            spanish = item.spanish,
+            ukrainian = item.ukrainian
         )
 
     fun mapToUiItems(items: List<SpanishVerbModel>): List<SpanishVerbUiItem> {
-        return items.map { item -> item.mapToUiItem() }
+        return items.map { item -> mapToUiItem(item) }
     }
 }

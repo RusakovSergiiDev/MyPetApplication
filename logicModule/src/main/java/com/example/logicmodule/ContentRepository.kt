@@ -62,7 +62,6 @@ class ContentRepository @Inject constructor(
 
     suspend fun loadEnglishRules() {
         englishRulesTaskSourceFlow.value = Task.Loading
-        delay(3000)
         try {
             val englishRules = englishService.getEnglishRules()
             val englishRulesMapped = englishRules.mapToEnglishRulesModel()
