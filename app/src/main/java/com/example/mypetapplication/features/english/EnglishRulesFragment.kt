@@ -1,21 +1,20 @@
-package com.example.mypetapplication.features.spain
+package com.example.mypetapplication.features.english
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.base.BaseFragment
-import com.example.mypetapplication.features.spain.compose.SpanishTop200VerbsScreen
+import com.example.mypetapplication.features.english.compose.EnglishRulesScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SpanishTop200VerbsFragment :
-    BaseFragment<SpanishTop200VerbsViewModel>(SpanishTop200VerbsViewModel::class.java) {
+class EnglishRulesFragment :
+    BaseFragment<EnglishRulesViewModel>(EnglishRulesViewModel::class.java) {
 
     override val screenId: ScreenId
-        get() = ScreenId.SpanishTop200VerbsScreen
+        get() = ScreenId.EnglishRulesScreen
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,11 +22,14 @@ class SpanishTop200VerbsFragment :
         savedInstanceState: Bundle?
     ): View = createCommonComposeScreen(
         contentLiveData = viewModel.screenContentLiveData,
-        content = { contentLiveData ->
-            SpanishTop200VerbsScreen(contentLiveData)
+        content = { liveData ->
+            EnglishRulesScreen(liveData)
         }
     )
 
     override fun onSetupObservers() {
+//        viewModel.showErrorEvent.observe(this) {
+//            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+//        }
     }
 }

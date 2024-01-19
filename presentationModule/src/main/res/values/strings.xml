@@ -9,6 +9,8 @@
     <string name="label_englishIrregularVerbs">English Irregular Verbs</string>
     <string name="label_allEnglishIrregularVerbs">All English Irregular Verbs</string>
     <string name="label_label_seeAll">See All</string>
+    <string name="label_logOut">Log Out</string>
+    <string name="label_englishRules">English Rules</string>
 
     <string name="label_homeOptionSpanishVerbs">Verbos españoles</string>
     <string name="label_Top200SpanishVerbs">Top-200 Verbos españoles</string>

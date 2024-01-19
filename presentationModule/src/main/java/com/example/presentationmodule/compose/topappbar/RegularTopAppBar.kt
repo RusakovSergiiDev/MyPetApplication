@@ -2,6 +2,7 @@ package com.example.presentationmodule.compose.topappbar
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +17,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun RegularTopAppBar(
     @StringRes titleResId: Int,
-    content: @Composable (PaddingValues) -> Unit
+    actions: @Composable (RowScope.() -> Unit)? = null,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -31,7 +33,8 @@ fun RegularTopAppBar(
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 20.sp
                     )
-                }
+                },
+                actions = actions ?: {},
             )
         },
     ) {

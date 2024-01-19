@@ -1,4 +1,4 @@
-package com.example.logicmodule.usecases
+package com.example.logicmodule.usecases.firebase
 
 import com.example.logicmodule.FirebaseRepository
 import com.google.firebase.auth.FirebaseUser

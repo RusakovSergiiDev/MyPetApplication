@@ -25,7 +25,7 @@ fun HomeMainOptionItemCell(item: HomeMainOptionUIiItem) {
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(8.dp)
             )
             .clickable { item.onHomeMainOptionItemClicked?.invoke() }
             .padding(
@@ -42,10 +42,10 @@ fun HomeMainOptionItemCell(item: HomeMainOptionUIiItem) {
                 .fillMaxWidth(),
             text = item.title,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
-            fontSize = 32.sp
+            fontSize = 24.sp
         )
-        Spacer(modifier = Modifier.height(8.dp))
         item.description?.let {
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
