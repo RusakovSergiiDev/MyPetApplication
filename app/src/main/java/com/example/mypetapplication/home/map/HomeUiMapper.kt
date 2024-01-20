@@ -2,17 +2,23 @@ package com.example.mypetapplication.home.map
 
 import android.content.Context
 import com.example.datamodule.models.HomeMainOptionModel
-import com.example.presentationmodule.data.HomeMainOptionUIiItem
+import com.example.datamodule.types.HomeMainOptionType
+import com.example.presentationmodule.data.HomeMainOptionUiItem
+import javax.inject.Inject
 
-class HomeUiMapper(private val context: Context) {
-    private fun HomeMainOptionModel.mapToUiItem(): HomeMainOptionUIiItem =
-        HomeMainOptionUIiItem(
+class HomeUiMapper @Inject constructor(private val context: Context) {
+
+    private fun HomeMainOptionModel.mapToUiItem(callback: (HomeMainOptionType) -> Unit): HomeMainOptionUiItem =
+        HomeMainOptionUiItem(
             title = context.getString(this.titleResId),
             description = this.descriptionResId?.let { context.getString(it) },
-            onHomeMainOptionItemClicked = { this.onHomeMainOptionItemClicked?.invoke(this.type) }
+            callback = { callback.invoke(this.type) }
         )
 
-    fun mapToUiItems(items: List<HomeMainOptionModel>): List<HomeMainOptionUIiItem> {
-        return items.map { item -> item.mapToUiItem() }
+    fun mapToUiItems(
+        models: List<HomeMainOptionModel>,
+        callback: (HomeMainOptionType) -> Unit
+    ): List<HomeMainOptionUiItem> {
+        return models.map { model -> model.mapToUiItem(callback) }
     }
 }

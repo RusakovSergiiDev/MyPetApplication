@@ -8,10 +8,13 @@
     <string name="label_home">Home</string>
     <string name="label_englishIrregularVerbs">English Irregular Verbs</string>
     <string name="label_allEnglishIrregularVerbs">All English Irregular Verbs</string>
-    <string name="label_label_seeAll">See All</string>
+    <string name="label_seeAll">See All</string>
     <string name="label_logOut">Log Out</string>
+    <string name="label_retry">Retry</string>
     <string name="label_englishRules">English Rules</string>
 
     <string name="label_homeOptionSpanishVerbs">Verbos españoles</string>
     <string name="label_Top200SpanishVerbs">Top-200 Verbos españoles</string>
+    <string name="label_trySignUp">Don\'t have an account? Sign Up</string>
+    <string name="label_trySignIn">Do you already have an account? Sign In</string>
 </resources>

@@ -15,10 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentationmodule.data.HomeMainOptionUIiItem
+import com.example.presentationmodule.data.HomeMainOptionUiItem
 
 @Composable
-fun HomeMainOptionItemCell(item: HomeMainOptionUIiItem) {
+fun HomeMainOptionItemCell(item: HomeMainOptionUiItem) {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -27,7 +27,7 @@ fun HomeMainOptionItemCell(item: HomeMainOptionUIiItem) {
                 color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(8.dp)
             )
-            .clickable { item.onHomeMainOptionItemClicked?.invoke() }
+            .clickable { item.callback?.invoke() }
             .padding(
                 paddingValues = PaddingValues(
                     start = 24.dp,

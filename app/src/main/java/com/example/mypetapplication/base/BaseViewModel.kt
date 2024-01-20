@@ -1,43 +1,58 @@
 package com.example.mypetapplication.base
 
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.example.datamodule.types.Task
+import com.example.datamodule.types.isError
 import com.example.logicmodule.usecases.IFlowTaskUseCase
 import com.example.mypetapplication.utils.SimpleNavigationEvent
 import com.example.mypetapplication.utils.SingleLiveData
+import com.example.presentationmodule.data.TopAppBarAction
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 open class BaseViewModel : ViewModel() {
 
+    companion object {
+        private const val LOG_TAG = "BASE_VIEW_MODEL"
+    }
+
     // Internal param(s)
-    private val isContentLoadingSourceFlow = MutableStateFlow(false)
-    private val isContentInErrorStateSourceFlow = MutableStateFlow(false)
+    private val isContentLoadingFlowSource = MutableStateFlow(false)
+    private val isContentInErrorStateFlowSource = MutableStateFlow(false)
+    private val customScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private var customScopeJob: Job? = null
+    private val errorHandler = CoroutineExceptionHandler { _, exception ->
+        Log.d(LOG_TAG, "errorHandler -> $exception")
+        Log.d(LOG_TAG, "errorHandler -> ${customScope.isActive}")
+    }
 
     // External param(s)
-    val isLoadingLiveData: LiveData<Boolean> = isContentLoadingSourceFlow.asLiveData()
+    val isLoadingLiveData: LiveData<Boolean> = isContentLoadingFlowSource.asLiveData()
     val isContentInErrorStateLiveData: LiveData<Boolean> =
-        isContentInErrorStateSourceFlow.asLiveData()
+        isContentInErrorStateFlowSource.asLiveData()
 
     // Event(s)
     val navigationBackEvent = SimpleNavigationEvent()
     val logOutEvent = SimpleNavigationEvent()
     val showErrorEvent = SingleLiveData<String>()
 
-    private val customScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
-
     override fun onCleared() {
         super.onCleared()
-        customScope.coroutineContext.cancel()
+        customScope.cancel()
     }
 
     fun onBackClicked() {
@@ -52,67 +67,56 @@ open class BaseViewModel : ViewModel() {
 
     }
 
-    fun <T> executeUseCase(
+    private fun <T> executeUseCase(
         useCase: IFlowTaskUseCase<T>,
+        onTask: ((Task<T>) -> Unit)? = null,
         onSuccess: ((T) -> Unit)? = null,
         onEmpty: (() -> Unit)? = null,
     ) {
-        handleLoading(true)
-        customScope.launch {
-            useCase.execute().flowOn(Dispatchers.IO).collect { task ->
-                when (task) {
-                    is Task.Success -> {
-                        handleLoading(false)
-                        onSuccess?.invoke(task.data)
+        handleLoading()
+        customScope.launch(errorHandler) {
+            useCase.execute().collect { task ->
+                withContext(Dispatchers.Main) {
+                    onTask?.invoke(task)
+                    when (task) {
+                        is Task.Success -> handleSuccess(task, onSuccess)
+                        is Task.Error -> handleError(task)
+                        is Task.Empty -> handleEmpty(onEmpty)
+                        is Task.Loading -> handleLoading()
+                        else -> handleFinish()
                     }
-
-                    is Task.Error -> {
-                        handleLoading(false)
-                        handleError(task.errorMessage)
-                    }
-
-                    is Task.Empty -> {
-                        handleLoading(false)
-                        onEmpty?.invoke()
-                    }
-
-                    is Task.Loading -> handleLoading(true)
-                    else -> handleLoading(false)
                 }
             }
         }
     }
 
-    fun <T> executeForSuccessUseCase(
+    protected fun <T> executeForTaskResultUseCase(
+        useCase: IFlowTaskUseCase<T>,
+        onTask: ((Task<T>) -> Unit)? = null
+    ) {
+        executeUseCase(useCase = useCase, onTask = onTask)
+    }
+
+    protected fun <T> executeForSuccessTaskResultUseCase(
         useCase: IFlowTaskUseCase<T>,
         onSuccess: ((T) -> Unit)? = null
     ) {
-        executeUseCase(useCase, onSuccess = onSuccess)
+        executeUseCase(useCase = useCase, onSuccess = onSuccess)
     }
 
-    fun <T> executeAndWrapUseCase(
+    protected fun <T> executeAndWrapUseCase(
         useCase: IFlowTaskUseCase<T>
     ): Flow<Task<T>> {
-        handleLoading(true)
+        handleLoading()
         val flow: Flow<Task<T>> = channelFlow {
-            customScope.launch {
+            customScopeJob = customScope.launch {
                 useCase.execute().collect { task ->
                     when (task) {
-                        is Task.Success -> {
-                            handleSuccess(task)
-                        }
-
-                        is Task.Empty -> {
-                            handleLoading(false)
-                        }
-
-                        is Task.Error -> {
-                            handleLoading(false)
-                            handleError(task.errorMessage)
-                        }
-
-                        is Task.Loading -> handleLoading(true)
-                        else -> handleLoading(false)
+                        is Task.Success -> handleSuccess(task = task)
+                        is Task.Empty -> handleEmpty()
+                        is Task.Error -> handleError(task = task)
+                        is Task.Loading -> handleLoading()
+                        else -> handleFinish()
                     }
                     trySend(task)
                 }
@@ -122,33 +126,62 @@ open class BaseViewModel : ViewModel() {
     }
 
     fun <T> retryUseCase(useCase: IFlowTaskUseCase<T>) {
+        Log.d(LOG_TAG, "retryUseCase")
         customScope.launch {
             useCase.retry()
         }
     }
 
-    private fun <T> handleSuccess(task: Task.Success<T>) {
-        Log.d("myLogs", "handleSuccess")
-        isContentLoadingSourceFlow.value = false
-        isContentInErrorStateSourceFlow.value = false
+    private fun <T> handleSuccess(
+        task: Task.Success<T>,
+        onSuccess: ((T) -> Unit)? = null,
+    ) {
+        Log.d(LOG_TAG, "handleSuccess")
+        isContentLoadingFlowSource.value = false
+        isContentInErrorStateFlowSource.value = false
+        onSuccess?.invoke(task.data)
     }
 
-    private fun handleEmpty() {
-        Log.d("myLogs", "handleEmpty")
-        isContentLoadingSourceFlow.value = false
-        isContentInErrorStateSourceFlow.value = false
+    private fun handleEmpty(
+        onEmpty: (() -> Unit)? = null
+    ) {
+        Log.d(LOG_TAG, "handleEmpty")
+        isContentLoadingFlowSource.value = false
+        isContentInErrorStateFlowSource.value = false
+        onEmpty?.invoke()
     }
 
-    private fun handleError(errorMessage: String) {
-        Log.d("myLogs", "handleError:$errorMessage")
-        showErrorEvent.postValue(errorMessage)
-        isContentLoadingSourceFlow.value = false
-        isContentInErrorStateSourceFlow.value = true
+    private fun handleError(task: Task.Error) {
+        val errorMessage = task.errorMessage
+        Log.d(LOG_TAG, "handleError:${errorMessage}")
+        showErrorEvent.value = errorMessage
+        isContentLoadingFlowSource.value = false
+        isContentInErrorStateFlowSource.value = true
     }
 
-    private fun handleLoading(isLoading: Boolean) {
-        Log.d("myLogs", "handleLoading:$isLoading")
-        isContentLoadingSourceFlow.value = true
-        isContentInErrorStateSourceFlow.value = false
+    fun handleLoading() {
+        Log.d(LOG_TAG, "handleLoading")
+        isContentLoadingFlowSource.value = true
+        isContentInErrorStateFlowSource.value = false
+    }
+
+    private fun handleFinish() {
+        Log.d(LOG_TAG, "handleFinish")
+        isContentLoadingFlowSource.value = false
+        isContentInErrorStateFlowSource.value = false
+    }
+
+    protected fun <T> Task<T>.createRetryTopAppBarAction(
+        callback: () -> Unit,
+    ): TopAppBarAction? {
+        val topAppBarAction = if (this.isError()) {
+            TopAppBarAction.IconVectorAction(
+                imageVector = Icons.Default.Refresh,
+                callback = { callback.invoke() }
+            )
+        } else {
+            null
+        }
+        return topAppBarAction
     }
 }

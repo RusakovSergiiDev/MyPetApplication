@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,24 +25,33 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.switchMap
+import com.example.mypetapplication.utils.undefined
+import com.example.presentationmodule.R
 import com.example.presentationmodule.AppTheme
+import com.example.presentationmodule.compose.topappbar.TopAppBarActionComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : IBaseScreenContent> BaseComposeScreen(
     onBackClicked: (() -> Unit)? = null,
+    isShowLoading: State<Boolean>,
     onRetryClicked: (() -> Unit)? = null,
-    isShowLoading: LiveData<Boolean>,
-    isShowRetry: LiveData<Boolean>,
-    contentLiveData: LiveData<BaseFullComposeScreenContent<T>>,
-    content: @Composable (LiveData<BaseFullComposeScreenContent<T>>) -> Unit
+    isShowRetry: State<Boolean>,
+    fullScreenContentLiveData: LiveData<BaseFullComposeScreenContent<T>>,
+    contentScreen: @Composable (State<T?>) -> Unit
 ) {
-    val contentState = contentLiveData.observeAsState()
+    val fullScreenContentState = fullScreenContentLiveData.observeAsState()
+    val screenContentState = fullScreenContentLiveData.switchMap { it.content }.observeAsState()
     AppTheme {
         Scaffold(
             topBar = {
-                val titleResId = contentState.value?.topAppBarTitleResId
-                val title = titleResId?.let { stringResource(id = titleResId) } ?: ""
+                val titleResId = fullScreenContentState.value?.topAppBarTitleResId
+                if (titleResId == undefined) {
+                    return@Scaffold
+                }
+                val titleText = titleResId?.let { stringResource(id = titleResId) }
+                val action = fullScreenContentState.value?.topAppBarAction?.observeAsState()?.value
 
                 TopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -49,9 +59,9 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                     title = {
-                        titleResId ?: return@TopAppBar
+                        titleText ?: return@TopAppBar
                         Text(
-                            text = title,
+                            text = titleText,
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 20.sp
                         )
@@ -66,7 +76,11 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                             )
                         }
                     },
-                    // actions = actions ?: {},
+                    actions = {
+                        action?.let {
+                            TopAppBarActionComponent(topAppBarAction = it)
+                        }
+                    },
                 )
             },
             content = { paddingValues ->
@@ -75,9 +89,9 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                         .padding(paddingValues)
                         .fillMaxSize()
                 ) {
-                    content(contentLiveData)
-                    val isLoadingState = isShowLoading.observeAsState().value ?: false
-                    val isRetryState = isShowRetry.observeAsState().value ?: false
+                    contentScreen(screenContentState)
+                    val isLoadingState = isShowLoading.value
+                    val isRetryState = isShowRetry.value
                     if (isLoadingState) {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -89,7 +103,7 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                             onClick = { onRetryClicked?.invoke() },
                             modifier = Modifier.align(Alignment.Center)
                         ) {
-                            Text("Retry")
+                            Text(stringResource(id = R.string.label_retry))
                         }
                     }
                 }

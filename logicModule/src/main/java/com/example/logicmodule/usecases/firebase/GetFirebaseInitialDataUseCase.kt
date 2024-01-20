@@ -10,7 +10,7 @@ class GetFirebaseInitialDataUseCase @Inject constructor(
     private val firebaseRepository: FirebaseRepository
 ) {
 
-    fun execute(): Flow<Boolean> {
+    suspend fun execute(): Flow<Boolean> {
         return combine(
             firebaseRepository.getEnglishIrregularVerbsTaskFlowOrLoad(),
             firebaseRepository.getSpanishTop200VerbsTaskFlowOrLoad()

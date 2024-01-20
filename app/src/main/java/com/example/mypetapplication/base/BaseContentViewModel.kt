@@ -2,26 +2,28 @@ package com.example.mypetapplication.base
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.flow.Flow
+import com.example.presentationmodule.data.TopAppBarAction
 
 abstract class BaseContentViewModel<T : IBaseScreenContent> : BaseViewModel() {
 
-    abstract val contentWrapperFlow: Flow<IBaseScreenContent>
-    abstract val contentSourceLiveData: LiveData<T>
-    abstract val topAppBarTitleResId: Int
-
     // Internal param(s)
-    private val screenContentSourceLiveData = MutableLiveData<BaseFullComposeScreenContent<T>>()
+    private val titleResIdLiveDataSource = MutableLiveData<Int>()
+    private val topAppBarActionLiveDataSource = MutableLiveData<TopAppBarAction?>()
+    private val contentLiveDataSource = MutableLiveData<BaseFullComposeScreenContent<T>>()
 
-    // External param(s)
-    val screenContentLiveData: LiveData<BaseFullComposeScreenContent<T>> =
-        screenContentSourceLiveData
+    abstract fun getTopAppBarTitleResId(): Int
 
-    fun prepareScreenContentSource() {
-        val content = BaseFullComposeScreenContent(
-            topAppBarTitleResId = topAppBarTitleResId,
-            screenContent = contentSourceLiveData,
-        )
-        screenContentSourceLiveData.value = content
+    protected open fun setTopAppBarAction(topAppBarAction: TopAppBarAction?) {
+        topAppBarActionLiveDataSource.value = topAppBarAction
     }
+
+    fun registerContentSource(content: LiveData<T>) {
+        contentLiveDataSource.value = BaseFullComposeScreenContent(
+            topAppBarTitleResId = getTopAppBarTitleResId(),
+            topAppBarAction = topAppBarActionLiveDataSource,
+            content = content
+        )
+    }
+
+    fun getScreenContentSource(): LiveData<BaseFullComposeScreenContent<T>> = contentLiveDataSource
 }

@@ -1,13 +1,18 @@
 package com.example.mypetapplication.splash
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.datamodule.types.Task
 import com.example.datamodule.types.isSuccessOrEmpty
 import com.example.logicmodule.usecases.GetFeatureListFlowTaskUseCase
 import com.example.logicmodule.usecases.firebase.GetFirebaseCurrentUserUseCase
 import com.example.logicmodule.usecases.firebase.GetFirebaseInitialDataUseCase
-import com.example.mypetapplication.base.BaseViewModel
+import com.example.mypetapplication.base.BaseContentViewModel
+import com.example.mypetapplication.splash.data.SplashScreenContent
 import com.example.mypetapplication.utils.SimpleNavigationEvent
+import com.example.mypetapplication.utils.undefined
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -21,19 +26,19 @@ class SplashViewModel @Inject constructor(
     private val getFirebaseCurrentUserUseCase: GetFirebaseCurrentUserUseCase,
     private val getFirebaseInitialDataUseCase: GetFirebaseInitialDataUseCase,
     private val getFeatureListUseCase: GetFeatureListFlowTaskUseCase
-) : BaseViewModel() {
+) : BaseContentViewModel<SplashScreenContent>() {
 
     // Internal param(s)
-    private val isTimerFinishedSourceFlow = MutableStateFlow(false)
-    private val isAuthenticationCompletedSourceFlow = MutableStateFlow(false)
-    private val isAllNecessaryFirebaseDataLoadedFlow = MutableStateFlow(false)
-    private val isAllNecessaryServerDataLoadedFlow = MutableStateFlow(false)
-    private val authStatusSourceFlow =
+    private val isTimerFinishedFlowSource = MutableStateFlow(false)
+    private val isAuthenticationCompletedFlowSource = MutableStateFlow(false)
+    private val isAllNecessaryFirebaseDataLoadedFlowSource = MutableStateFlow(false)
+    private val isAllNecessaryServerDataLoadedFlowSource = MutableStateFlow(false)
+    private val authStatusFlowSource =
         combine(
-            isTimerFinishedSourceFlow,
-            isAuthenticationCompletedSourceFlow,
-            isAllNecessaryFirebaseDataLoadedFlow,
-            isAllNecessaryServerDataLoadedFlow,
+            isTimerFinishedFlowSource,
+            isAuthenticationCompletedFlowSource,
+            isAllNecessaryFirebaseDataLoadedFlowSource,
+            isAllNecessaryServerDataLoadedFlowSource,
         ) { isTimerFinished, isAuthenticationCompleted, isAllNecessaryDataLoaded, isAllNecessaryServerDataLoaded ->
             AuthStatus(
                 isTimerFinished,
@@ -42,13 +47,17 @@ class SplashViewModel @Inject constructor(
                 isAllNecessaryServerDataLoaded
             )
         }
+    private val contentLiveDataSource = MutableLiveData(SplashScreenContent(true))
+
+    // Base fun(s)
+    override fun getTopAppBarTitleResId() = undefined
 
     // Event(s)
     val navigateToAuthSelectionEvent = SimpleNavigationEvent()
     val navigateToHomeEvent = SimpleNavigationEvent()
 
     init {
-        authStatusSourceFlow
+        authStatusFlowSource
             .onEach { authStatus ->
                 if (!authStatus.isTimerFinished) return@onEach
                 else if (!authStatus.isAuthenticationCompleted) navigateToAuthSelectionEvent.call()
@@ -58,33 +67,36 @@ class SplashViewModel @Inject constructor(
 
         startTimer()
         checkIsAuthenticationCompleted()
+        registerContentSource(contentLiveDataSource)
     }
 
     private fun startTimer() {
         viewModelScope.launch {
-            delay(1500)
-            isTimerFinishedSourceFlow.value = true
+            delay(3000)
+            isTimerFinishedFlowSource.value = true
         }
     }
 
     private fun checkIsAuthenticationCompleted() {
-        val currentUser = getFirebaseCurrentUserUseCase.execute()
-        val isSignedUp = currentUser != null
-        isAuthenticationCompletedSourceFlow.value = isSignedUp
-        if (isSignedUp) {
-            loadInitialData()
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentUser = getFirebaseCurrentUserUseCase.execute()
+            val isSignedUp = currentUser != null
+            isAuthenticationCompletedFlowSource.value = isSignedUp
+            if (isSignedUp) {
+                loadInitialData()
+            }
         }
     }
 
     private fun loadInitialData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getFirebaseInitialDataUseCase.execute().collect {
-                isAllNecessaryFirebaseDataLoadedFlow.value = it
+                isAllNecessaryFirebaseDataLoadedFlowSource.value = it
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             executeAndWrapUseCase(getFeatureListUseCase).collect { task ->
-                isAllNecessaryServerDataLoadedFlow.value = task.isSuccessOrEmpty()
+                isAllNecessaryServerDataLoadedFlowSource.value = task.isSuccessOrEmpty()
             }
         }
     }

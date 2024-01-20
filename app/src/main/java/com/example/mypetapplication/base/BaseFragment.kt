@@ -1,8 +1,12 @@
 package com.example.mypetapplication.base
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -15,7 +19,7 @@ abstract class BaseFragment<VM : BaseViewModel>(
 ) : Fragment() {
 
     abstract val screenId: ScreenId?
-
+    abstract fun provideView(): ComposeView
     abstract fun onSetupObservers()
 
     protected lateinit var viewModel: VM
@@ -23,6 +27,14 @@ abstract class BaseFragment<VM : BaseViewModel>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[viewModelJavaClass]
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return provideView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,20 +51,24 @@ abstract class BaseFragment<VM : BaseViewModel>(
 
     protected fun <T : IBaseScreenContent> createCommonComposeScreen(
         contentLiveData: LiveData<BaseFullComposeScreenContent<T>>,
-        content: @Composable (LiveData<BaseFullComposeScreenContent<T>>) -> Unit
+        isShowBackAction: Boolean = true,
+        contentScreen: @Composable (State<T?>) -> Unit
     ): ComposeView {
         return ComposeView(requireContext()).apply {
             setContent {
                 BaseComposeScreen(
-                    onBackClicked = { viewModel.onBackClicked() },
+                    onBackClicked = getOnBackClicked(isShowBackAction),
+                    isShowLoading = viewModel.isLoadingLiveData.observeAsState(initial = false),
                     onRetryClicked = { viewModel.onRetryClicked() },
-                    isShowLoading = viewModel.isLoadingLiveData,
-                    isShowRetry = viewModel.isContentInErrorStateLiveData,
-                    contentLiveData = contentLiveData,
-                    content = { source ->
-                        content(source)
+                    isShowRetry = viewModel.isContentInErrorStateLiveData.observeAsState(initial = false),
+                    fullScreenContentLiveData = contentLiveData,
+                    contentScreen = { contentForScreenState ->
+                        contentScreen(contentForScreenState)
                     })
             }
         }
     }
+
+    private fun getOnBackClicked(isShowBackAction: Boolean): (() -> Unit)? =
+        if (isShowBackAction) viewModel::onBackClicked else null
 }

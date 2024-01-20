@@ -1,23 +1,40 @@
 package com.example.mypetapplication.home
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
-import com.example.mypetapplication.base.BaseViewModel
 import com.example.datamodule.models.HomeMainOptionModel
 import com.example.datamodule.types.HomeMainOptionType
+import com.example.logicmodule.usecases.GetHomeFeaturesUseCase
+import com.example.mypetapplication.base.BaseContentViewModel
+import com.example.mypetapplication.home.data.HomeScreenContent
+import com.example.mypetapplication.home.map.HomeUiMapper
 import com.example.presentationmodule.R
 import com.example.mypetapplication.utils.SimpleNavigationEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class HomeViewModel : BaseViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    getHomeFeaturesUseCase: GetHomeFeaturesUseCase,
+    uiMapper: HomeUiMapper
+) : BaseContentViewModel<HomeScreenContent>() {
 
     // Internal param(s)
-    private val homeMainOptionItemsSourceFlow =
+    private val homeMainOptionsFlowSource =
         MutableStateFlow<List<HomeMainOptionModel>>(emptyList())
+    private val homeMainOptionsMappedFlowSource = homeMainOptionsFlowSource.map { models ->
+        HomeScreenContent(
+            uiMapper.mapToUiItems(
+                models = models,
+                callback = { handleHomeMainOptionItemSelection(it) }
+            )
+        )
+    }
+    private val contentLiveDataSource = homeMainOptionsMappedFlowSource.asLiveData()
 
-    // External param(s)
-    val homeMainOptionsLiveData: LiveData<List<HomeMainOptionModel>> =
-        homeMainOptionItemsSourceFlow.asLiveData()
+    // Base fun(s)
+    override fun getTopAppBarTitleResId() = R.string.label_home
 
     // Event(s)
     val navigateToEnglishRulesEvent = SimpleNavigationEvent()
@@ -25,34 +42,13 @@ class HomeViewModel : BaseViewModel() {
     val navigateToSpanishTop200VerbsEvent = SimpleNavigationEvent()
 
     init {
-        generateHomeMainOptionItems()
+        executeForSuccessTaskResultUseCase(getHomeFeaturesUseCase) {
+            homeMainOptionsFlowSource.value = it
+        }
+        registerContentSource(contentLiveDataSource)
     }
 
-    private fun generateHomeMainOptionItems() {
-        val result = mutableListOf<HomeMainOptionModel>()
-        val englishRulesItem = HomeMainOptionModel(
-            type = HomeMainOptionType.ENGLISH_RULES,
-            titleResId = R.string.label_englishRules,
-            onHomeMainOptionItemClicked = { processHomeMainOptionItemSelection(it) }
-        )
-        result.add(englishRulesItem)
-        val englishIrregularVerbsItem = HomeMainOptionModel(
-            type = HomeMainOptionType.ENGLISH_IRREGULAR_VERBS,
-            titleResId = R.string.label_irregularVerbs,
-            descriptionResId = R.string.label_irregularVerbsDescription,
-            onHomeMainOptionItemClicked = { processHomeMainOptionItemSelection(it) }
-        )
-        result.add(englishIrregularVerbsItem)
-        val spainVerbsItem = HomeMainOptionModel(
-            type = HomeMainOptionType.SPANISH_TOP_200_VERBS,
-            titleResId = R.string.label_homeOptionSpanishVerbs,
-            onHomeMainOptionItemClicked = { processHomeMainOptionItemSelection(it) }
-        )
-        result.add(spainVerbsItem)
-        homeMainOptionItemsSourceFlow.value = result
-    }
-
-    private fun processHomeMainOptionItemSelection(type: HomeMainOptionType) {
+    private fun handleHomeMainOptionItemSelection(type: HomeMainOptionType) {
         when (type) {
             HomeMainOptionType.ENGLISH_RULES -> navigateToEnglishRulesEvent.call()
             HomeMainOptionType.ENGLISH_IRREGULAR_VERBS -> navigateToEnglishIrregularVerbsEvent.call()

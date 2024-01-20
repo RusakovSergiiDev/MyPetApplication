@@ -7,7 +7,7 @@ import com.example.datamodule.dto.server.EnglishRulesDto
 import com.example.datamodule.dto.server.EnglishTimeRuleDto
 import com.example.datamodule.models.EnglishIrregularVerbModel
 import com.example.datamodule.models.SpanishVerbModel
-import com.example.datamodule.models.english.EnglishConditionalRuleModel
+import com.example.datamodule.models.english.EnglishConditionalModel
 import com.example.datamodule.models.english.EnglishRulesModel
 import com.example.datamodule.models.english.EnglishTimeRuleModel
 
@@ -49,25 +49,33 @@ fun List<SpanishVerbDto>.mapSpanishVerbModelList(): List<SpanishVerbModel> {
     }
 }
 
-fun EnglishTimeRuleDto.mapToEnglishTimeRuleModel(): EnglishTimeRuleModel {
+fun EnglishTimeRuleDto.mapToEnglishTimeRuleModel(): EnglishTimeRuleModel? {
+    val ruleName = this.ruleName
+    val structure = this.structure
+    val example = this.example
+    if (ruleName == null || structure == null || example == null) return null
     return EnglishTimeRuleModel(
-        ruleName = this.ruleName,
-        structure = this.structure,
-        example = this.example
+        ruleName = ruleName,
+        structure = structure,
+        example = example
     )
 }
 
-fun EnglishConditionalRuleDto.mapToEnglishConditionalRuleModel(): EnglishConditionalRuleModel {
-    return EnglishConditionalRuleModel(
-        conditionalName = this.conditionalName,
-        structure = this.structure,
-        example = this.example
+fun EnglishConditionalRuleDto.mapToEnglishConditionalRuleModel(): EnglishConditionalModel? {
+    val conditionalName = this.conditionalName
+    val structure = this.structure
+    val example = this.example
+    if (conditionalName == null || structure == null || example == null) return null
+    return EnglishConditionalModel(
+        conditionalName = conditionalName,
+        structure = structure,
+        example = example
     )
 }
 
 fun EnglishRulesDto.mapToEnglishRulesModel(): EnglishRulesModel {
     return EnglishRulesModel(
-        timeRules = this.timeRules.map { it.mapToEnglishTimeRuleModel() },
-        conditionals = this.conditionals.map { it.mapToEnglishConditionalRuleModel() }
+        timeRules = this.timeRules.mapNotNull { it.mapToEnglishTimeRuleModel() },
+        conditionals = this.conditionals.mapNotNull { it.mapToEnglishConditionalRuleModel() }
     )
 }

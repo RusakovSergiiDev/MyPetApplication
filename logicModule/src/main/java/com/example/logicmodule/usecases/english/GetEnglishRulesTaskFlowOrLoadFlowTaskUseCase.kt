@@ -16,6 +16,6 @@ class GetEnglishRulesTaskFlowOrLoadFlowTaskUseCase @Inject constructor(
     }
 
     override suspend fun retry() {
-        contentRepository.loadTestDataWithError()
+        contentRepository.loadEnglishRules()
     }
 }

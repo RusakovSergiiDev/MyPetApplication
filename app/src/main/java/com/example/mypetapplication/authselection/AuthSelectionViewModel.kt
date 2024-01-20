@@ -1,67 +1,108 @@
 package com.example.mypetapplication.authselection
 
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.example.datamodule.types.Task
+import com.example.datamodule.types.isLoading
+import com.example.datamodule.types.isSuccess
 import com.example.logicmodule.usecases.firebase.TryToSignInUseCase
-import com.example.mypetapplication.base.BaseViewModel
+import com.example.presentationmodule.R
+import com.example.mypetapplication.authselection.data.AuthSelectionScreenContent
+import com.example.mypetapplication.base.BaseContentViewModel
 import com.example.mypetapplication.utils.SimpleNavigationEvent
+import com.example.mypetapplication.utils.undefined
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthSelectionViewModel @Inject constructor(
     private val tryToSignInUseCase: TryToSignInUseCase
-) : BaseViewModel() {
+) : BaseContentViewModel<AuthSelectionScreenContent>() {
 
     // Internal param(s)
-    private val isSignInStateSourceFlow = MutableStateFlow(true)
-    private val emailSourceFlow = MutableStateFlow("")
-    private val passwordSourceFlow = MutableStateFlow("")
-    private val isButtonEnableSourceFlow =
-        combine(emailSourceFlow, passwordSourceFlow) { email, password ->
-            email.isNotEmpty() && password.isNotEmpty()
+    private val authProgressTaskFlowSource = MutableStateFlow<Task<Unit>>(Task.Initial)
+    private val isAuthLoadingFlowSource = authProgressTaskFlowSource.map { it.isLoading() }
+    private val isSignInStateFlowSource = MutableStateFlow(true)
+    private val emailFlowSource = MutableStateFlow("")
+    private val passwordFlowSource = MutableStateFlow("")
+    private val isInputEnableFlowSource = authProgressTaskFlowSource.map { !it.isLoading() }
+    private val isButtonEnableFlowSource =
+        combine(
+            emailFlowSource,
+            passwordFlowSource,
+            isAuthLoadingFlowSource
+        ) { email, password, isLoading ->
+            email.isNotEmpty() && password.isNotEmpty() && !isLoading
         }
+    private val additionalTextResIdFlowSource = isSignInStateFlowSource.map {
+        if (it) R.string.label_trySignUp else R.string.label_trySignIn
+    }
+    private val contentLiveDataSource = MutableLiveData(
+        AuthSelectionScreenContent(
+            isSignInStateFlowSource.asLiveData(),
+            emailFlowSource.asLiveData(),
+            passwordFlowSource.asLiveData(),
+            isInputEnableFlowSource.asLiveData(),
+            isButtonEnableFlowSource.asLiveData(),
+            isLoading = isAuthLoadingFlowSource.asLiveData(),
+            additionalText = additionalTextResIdFlowSource.asLiveData(),
+            onEmailChanged = { onEmailChanged(it) },
+            onPasswordChanged = { onPasswordChanged(it) },
+            onSwitchAuthTypeClicked = { onSwitchAuthTypeClicked() },
+            onAuthButtonClicked = { onAuthButtonClicked() },
+        )
+    )
 
-    // External param(s)
-    val isSignInStateLiveData = isSignInStateSourceFlow.asLiveData()
-    val emailLiveData: LiveData<String> = emailSourceFlow.asLiveData()
-    val passwordLiveData: LiveData<String> = passwordSourceFlow.asLiveData()
-    val isButtonEnableLiveData: LiveData<Boolean> = isButtonEnableSourceFlow.asLiveData()
+    // Base fun(s)
+    override fun getTopAppBarTitleResId() = undefined
 
     // Event(s)
     val navigateToHomeEvent = SimpleNavigationEvent()
 
-    fun onEmailChanged(email: String) {
-        emailSourceFlow.value = email
+    init {
+        authProgressTaskFlowSource.onEach {
+            if (it.isSuccess()) navigateToHomeEvent.call()
+        }.launchIn(viewModelScope)
+        registerContentSource(contentLiveDataSource)
     }
 
-    fun onPasswordChanged(password: String) {
-        passwordSourceFlow.value = password
+    private fun onEmailChanged(email: String) {
+        emailFlowSource.value = email
     }
 
-    fun signIn() {
-        tryToSignIn()
+    private fun onPasswordChanged(password: String) {
+        passwordFlowSource.value = password
     }
 
-    fun signUp() {
-
+    private fun onSwitchAuthTypeClicked() {
+        val isSignInState = isSignInStateFlowSource.value
+        isSignInStateFlowSource.value = !isSignInState
     }
 
-    fun switchToSignIn() {
-        isSignInStateSourceFlow.value = true
-    }
-
-    fun switchToSignUp() {
-        isSignInStateSourceFlow.value = false
+    private fun onAuthButtonClicked() {
+        val isSignInState = isSignInStateFlowSource.value
+        if (isSignInState) {
+            tryToSignIn()
+        } else {
+            tryToSignIn()
+        }
     }
 
     private fun tryToSignIn() {
-        val email = emailSourceFlow.value
-        val password = passwordSourceFlow.value
-        tryToSignInUseCase.execute(email, password) {
-            if (it) navigateToHomeEvent.call()
+        val email = emailFlowSource.value
+        val password = passwordFlowSource.value
+
+        viewModelScope.launch {
+            tryToSignInUseCase.execute(email, password) { task ->
+                authProgressTaskFlowSource.value = task
+            }
         }
     }
 }
