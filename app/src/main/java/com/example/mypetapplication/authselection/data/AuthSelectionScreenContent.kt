@@ -2,14 +2,14 @@ package com.example.mypetapplication.authselection.data
 
 import androidx.lifecycle.LiveData
 import com.example.mypetapplication.base.IBaseScreenContent
+import com.example.presentationmodule.compose.button.MyPetButtonState
 
 data class AuthSelectionScreenContent(
     val isSignInState: LiveData<Boolean>,
     val email: LiveData<String>,
     val password: LiveData<String>,
-    val isInputEnable: LiveData<Boolean>,
-    val isButtonEnable: LiveData<Boolean>,
-    val isLoading: LiveData<Boolean>,
+    val isScreenBlocked: LiveData<Boolean>,
+    val buttonState: LiveData<MyPetButtonState>,
     val isShowAuthError: LiveData<String?>,
     val additionalText: LiveData<Int>,
     val onEmailChanged: (String) -> Unit,

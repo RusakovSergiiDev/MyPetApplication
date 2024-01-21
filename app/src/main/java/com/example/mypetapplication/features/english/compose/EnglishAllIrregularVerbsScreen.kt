@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mypetapplication.features.english.data.EnglishAllIrregularScreenContent
+import com.example.mypetapplication.utils.log
 import com.example.presentationmodule.compose.EnglishIrregularVerbRowCell
 
 @Composable
@@ -27,11 +28,13 @@ fun EnglishAllIrregularVerbsScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        log("Column")
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.secondary)
         ) {
+            log("Row")
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -67,6 +70,7 @@ fun EnglishAllIrregularVerbsScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            log("LazyColumn")
             items(items) { item ->
                 EnglishIrregularVerbRowCell(item = item, checked)
             }

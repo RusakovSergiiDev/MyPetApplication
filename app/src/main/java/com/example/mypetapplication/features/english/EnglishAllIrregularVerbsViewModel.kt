@@ -7,6 +7,7 @@ import com.example.logicmodule.usecases.firebase.GetEnglishIrregularVerbsTaskFlo
 import com.example.mypetapplication.base.BaseContentViewModel
 import com.example.mypetapplication.features.english.data.EnglishAllIrregularScreenContent
 import com.example.mypetapplication.features.english.mappers.EnglishUiMapper
+import com.example.mypetapplication.utils.log
 import com.example.presentationmodule.R
 import com.example.presentationmodule.data.TopAppBarAction
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ class EnglishAllIrregularVerbsViewModel @Inject constructor(
         MutableStateFlow<List<EnglishIrregularVerbModel>>(emptyList())
     private val englishAllIrregularVerbsMappedFlow =
         englishAllIrregularVerbsFlowSource.map { models ->
+            log("map UI")
             models.forEachIndexed { index, englishIrregularVerbModel ->
                 englishIrregularVerbModel.index = index
             }
@@ -37,6 +39,7 @@ class EnglishAllIrregularVerbsViewModel @Inject constructor(
             isShowTranslateFlowSource,
             englishAllIrregularVerbsMappedFlow
         ) { isShowTranslate, englishAllIrregularVerbs ->
+            log("combine")
             EnglishAllIrregularScreenContent(
                 isShowTranslate, englishAllIrregularVerbs
             )

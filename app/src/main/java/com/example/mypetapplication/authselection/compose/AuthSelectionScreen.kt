@@ -16,7 +16,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.presentationmodule.R
 import com.example.mypetapplication.authselection.data.AuthSelectionScreenContent
+import com.example.presentationmodule.compose.button.MyPetButton
+import com.example.presentationmodule.compose.button.MyPetButtonState
 
 @Composable
 fun AuthSelectionScreen(
@@ -35,7 +38,7 @@ fun AuthSelectionScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val isInputEnable = content.isInputEnable.observeAsState(initial = true).value
+            val isScreenBlocked = content.isScreenBlocked.observeAsState(initial = false).value
             val emailFromContent = content.email.observeAsState(initial = "").value
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -43,7 +46,7 @@ fun AuthSelectionScreen(
                 onValueChange = { email ->
                     content.onEmailChanged.invoke(email)
                 },
-                enabled = isInputEnable,
+                enabled = !isScreenBlocked,
                 label = { Text("Email") },
                 maxLines = 1
             )
@@ -55,30 +58,17 @@ fun AuthSelectionScreen(
                 onValueChange = { email ->
                     content.onPasswordChanged.invoke(email)
                 },
-                enabled = isInputEnable,
+                enabled = !isScreenBlocked,
                 label = { Text("Password") },
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(24.dp))
-
-            val authButtonText = if (isSignInState) "SIGN IN" else "SIGN UP"
             val authButtonCallback = content.onAuthButtonClicked
-            val isAuthButtonEnable = content.isButtonEnable.observeAsState(initial = false).value
-            val isAuthLoading = content.isLoading.observeAsState(initial = false).value
-            Button(
-                onClick = { authButtonCallback.invoke() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                enabled = isAuthButtonEnable
-            ) {
-                if (isAuthLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(32.dp)
-                    )
-                } else {
-                    Text(authButtonText)
-                }
+            val authButtonState =
+                content.buttonState.observeAsState(initial = MyPetButtonState.Disable).value
+            val authButtonTextResId = if (isSignInState) R.string.sign_in else R.string.sign_up
+            MyPetButton(textResId = authButtonTextResId, state = authButtonState) {
+                authButtonCallback.invoke()
             }
             Spacer(modifier = Modifier.height(16.dp))
             val additionalTextResId = content.additionalText.observeAsState().value

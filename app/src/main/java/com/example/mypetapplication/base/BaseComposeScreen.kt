@@ -3,8 +3,6 @@ package com.example.mypetapplication.base
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -93,27 +90,6 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                     },
                 )
             },
-            snackbarHost = {
-                val snackbarError = isShowSnackbarError.value
-                val isSnackBarErrorVisible = !snackbarError.isNullOrBlank()
-                AnimatedVisibility(
-                    visible = isSnackBarErrorVisible,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(color = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = snackbarError ?: "",
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-            },
             content = { paddingValues ->
                 Box(
                     modifier = Modifier
@@ -121,6 +97,24 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                         .fillMaxSize()
                 ) {
                     contentScreen(screenContentState)
+
+                    val snackbarError = isShowSnackbarError.value
+                    val isSnackBarErrorVisible = !snackbarError.isNullOrBlank()
+                    AnimatedVisibility(
+                        visible = isSnackBarErrorVisible,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = MaterialTheme.colorScheme.error)
+                                .padding(16.dp),
+                            text = snackbarError ?: "",
+                            color = MaterialTheme.colorScheme.onError
+                        )
+                    }
+
                     val isLoadingState = isShowLoading.value
                     val isRetryState = isShowRetry.value
                     if (isLoadingState) {
