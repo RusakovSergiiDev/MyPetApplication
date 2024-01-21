@@ -65,14 +65,13 @@ fun EnglishAllIrregularVerbsScreen(
             )
         }
         val items = contentState.value?.items ?: emptyList()
-        val checked = contentState.value?.isShowTranslate?: false
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
         ) {
             log("LazyColumn")
             items(items) { item ->
-                EnglishIrregularVerbRowCell(item = item, checked)
+                EnglishIrregularVerbRowCell(item = item)
             }
         }
     }

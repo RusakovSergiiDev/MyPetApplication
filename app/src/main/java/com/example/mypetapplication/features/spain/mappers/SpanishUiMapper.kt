@@ -8,7 +8,6 @@ class SpanishUiMapper @Inject constructor() {
 
     fun mapToUiItem(item: SpanishVerbModel): SpanishVerbUiItem =
         SpanishVerbUiItem(
-            index = item.index,
             spanish = item.spanish,
             ukrainian = item.ukrainian
         )

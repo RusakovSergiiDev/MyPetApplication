@@ -14,8 +14,7 @@ class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
         get() = ScreenId.HomeScreen
 
     override fun provideView() = createCommonComposeScreen(
-        contentLiveData = viewModel.getScreenContentSource(),
-        isShowBackAction = false
+        viewModel.fullScreenContentLiveData,
     ) { contentState ->
         HomeScreen(contentState)
     }

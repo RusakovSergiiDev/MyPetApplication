@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import com.example.datamodule.types.ScreenId
 
@@ -49,20 +50,43 @@ abstract class BaseFragment<VM : BaseViewModel>(
         }
     }
 
-    protected fun <T : IBaseScreenContent> createCommonComposeScreen(
-        contentLiveData: LiveData<BaseFullComposeScreenContent<T>>,
-        isShowBackAction: Boolean = true,
+    protected fun <T : IScreenContent> createCommonComposeScreen(
+        fullScreenContentLiveData: LiveData<FullScreenContent<T>>,
         contentScreen: @Composable (State<T?>) -> Unit
     ): ComposeView {
         return ComposeView(requireContext()).apply {
             setContent {
                 BaseComposeScreen(
-                    onBackClicked = getOnBackClicked(isShowBackAction),
-                    isShowSnackbarError = viewModel.snackbarErrorEvent.observeAsState(initial = null),
-                    isShowLoading = viewModel.isLoadingLiveData.observeAsState(initial = false),
+                    isShowGlobalSnackbarError = viewModel.snackbarErrorEvent.observeAsState(initial = null),
+                    isShowGlobalLoading = viewModel.isLoadingLiveData.observeAsState(initial = false),
                     onRetryClicked = { viewModel.onRetryClicked() },
-                    isShowRetry = viewModel.isContentInErrorStateLiveData.observeAsState(initial = false),
-                    fullScreenContentLiveData = contentLiveData,
+                    isShowGlobalRetry = viewModel.isContentInErrorStateLiveData.observeAsState(
+                        initial = false
+                    ),
+                    topAppBarContentLiveData = fullScreenContentLiveData.map { it.topAppBarContent },
+                    screenContentLiveData = fullScreenContentLiveData.map { it.screenContent },
+                    contentScreen = { contentForScreenState ->
+                        contentScreen(contentForScreenState)
+                    })
+            }
+        }
+    }
+
+    protected fun <T : IScreenContent> createScreen(
+        screenContentLiveData: LiveData<T?>,
+        contentScreen: @Composable (State<T?>) -> Unit
+    ): ComposeView {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BaseComposeScreen(
+                    isShowGlobalSnackbarError = viewModel.snackbarErrorEvent.observeAsState(initial = null),
+                    isShowGlobalLoading = viewModel.isLoadingLiveData.observeAsState(initial = false),
+                    onRetryClicked = { viewModel.onRetryClicked() },
+                    isShowGlobalRetry = viewModel.isContentInErrorStateLiveData.observeAsState(
+                        initial = false
+                    ),
+                    topAppBarContentLiveData = viewModel.topAppBarContentLiveData,
+                    screenContentLiveData = screenContentLiveData,
                     contentScreen = { contentForScreenState ->
                         contentScreen(contentForScreenState)
                     })

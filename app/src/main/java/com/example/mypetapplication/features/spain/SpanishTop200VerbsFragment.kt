@@ -15,12 +15,13 @@ class SpanishTop200VerbsFragment :
     override val screenId: ScreenId
         get() = ScreenId.SpanishTop200VerbsScreen
 
-    override fun provideView(): ComposeView = createCommonComposeScreen(
-        contentLiveData = viewModel.getScreenContentSource()
+    override fun provideView(): ComposeView = createScreen(
+        viewModel.screenContentLiveData
     ) { contentState ->
         SpanishTop200VerbsScreen(contentState)
     }
 
     override fun onSetupObservers() {
+
     }
 }

@@ -16,7 +16,7 @@ class SplashFragment :
         get() = ScreenId.SplashScreen
 
     override fun provideView(): ComposeView = createCommonComposeScreen(
-        viewModel.getScreenContentSource()
+        viewModel.fullScreenContentLiveData
     ) { contentState ->
         SplashScreen(contentState)
     }

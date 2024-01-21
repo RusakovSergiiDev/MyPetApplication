@@ -14,6 +14,7 @@ import com.example.mypetapplication.utils.undefined
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -47,16 +48,19 @@ class SplashViewModel @Inject constructor(
                 isAllNecessaryServerDataLoaded
             )
         }
-    private val contentLiveDataSource = MutableLiveData(SplashScreenContent(true))
-
-    // Base fun(s)
-    override fun getTopAppBarTitleResId() = undefined
+    private val screenContentFlowSource = MutableStateFlow(SplashScreenContent(true))
 
     // Event(s)
     val navigateToAuthSelectionEvent = SimpleNavigationEvent()
     val navigateToHomeEvent = SimpleNavigationEvent()
 
+    override val screenContentFlow: Flow<SplashScreenContent> = screenContentFlowSource
+
     init {
+        setIsShowTopAppBar(false)
+
+        registerScreenContentSource(screenContentFlow)
+
         authStatusFlowSource
             .onEach { authStatus ->
                 if (!authStatus.isTimerFinished) return@onEach
@@ -67,7 +71,6 @@ class SplashViewModel @Inject constructor(
 
         startTimer()
         checkIsAuthenticationCompleted()
-        registerContentSource(contentLiveDataSource)
     }
 
     private fun startTimer() {

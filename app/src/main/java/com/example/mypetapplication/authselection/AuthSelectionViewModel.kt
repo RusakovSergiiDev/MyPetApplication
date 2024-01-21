@@ -1,6 +1,5 @@
 package com.example.mypetapplication.authselection
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.datamodule.types.Task
@@ -12,11 +11,11 @@ import com.example.presentationmodule.R
 import com.example.mypetapplication.authselection.data.AuthSelectionScreenContent
 import com.example.mypetapplication.base.BaseContentViewModel
 import com.example.mypetapplication.utils.SimpleNavigationEvent
-import com.example.mypetapplication.utils.undefined
 import com.example.presentationmodule.compose.button.MyPetButtonState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -66,30 +65,33 @@ class AuthSelectionViewModel @Inject constructor(
             null
         }
     }
-    private val contentLiveDataSource = MutableLiveData(
-        AuthSelectionScreenContent(
-            isSignInStateFlowSource.asLiveData(),
-            emailFlowSource.asLiveData(),
-            passwordFlowSource.asLiveData(),
-            isScreenBlockedFlowSource.asLiveData(),
-            authButtonStateFlowSource.asLiveData(),
-            isShowAuthError = isShowAuthErrorFlowSource.asLiveData(),
-            additionalText = additionalTextResIdFlowSource.asLiveData(),
-            onEmailChanged = { onEmailChanged(it) },
-            onPasswordChanged = { onPasswordChanged(it) },
-            onSwitchAuthTypeClicked = { onSwitchAuthTypeClicked() },
-            onAuthButtonClicked = { onAuthButtonClicked() },
-        )
-    )
     private var showAndHideErrorSnackbarJob: Job? = null
-
-    // Base fun(s)
-    override fun getTopAppBarTitleResId() = undefined
 
     // Event(s)
     val navigateToHomeEvent = SimpleNavigationEvent()
 
+    override val screenContentFlow: Flow<AuthSelectionScreenContent> =
+        MutableStateFlow(
+            AuthSelectionScreenContent(
+                isSignInStateFlowSource.asLiveData(),
+                emailFlowSource.asLiveData(),
+                passwordFlowSource.asLiveData(),
+                isScreenBlockedFlowSource.asLiveData(),
+                authButtonStateFlowSource.asLiveData(),
+                isShowAuthError = isShowAuthErrorFlowSource.asLiveData(),
+                additionalText = additionalTextResIdFlowSource.asLiveData(),
+                onEmailChanged = { onEmailChanged(it) },
+                onPasswordChanged = { onPasswordChanged(it) },
+                onSwitchAuthTypeClicked = { onSwitchAuthTypeClicked() },
+                onAuthButtonClicked = { onAuthButtonClicked() },
+            )
+        )
+
     init {
+        setIsShowTopAppBar(false)
+
+        registerScreenContentSource(screenContentFlow)
+
         authProgressTaskFlowSource.onEach {
             if (it.isSuccess()) {
                 navigateToHomeEvent.call()
@@ -100,7 +102,6 @@ class AuthSelectionViewModel @Inject constructor(
                 hideErrorSnackbar()
             }
         }.launchIn(viewModelScope)
-        registerContentSource(contentLiveDataSource)
     }
 
     private fun onEmailChanged(email: String) {

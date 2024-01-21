@@ -1,6 +1,7 @@
 package com.example.mypetapplication.home
 
-import androidx.lifecycle.asLiveData
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.lifecycle.viewModelScope
 import com.example.datamodule.models.HomeMainOptionModel
 import com.example.datamodule.types.HomeMainOptionType
@@ -10,12 +11,14 @@ import com.example.datamodule.types.isSuccess
 import com.example.logicmodule.usecases.GetHomeFeaturesUseCase
 import com.example.logicmodule.usecases.firebase.TryToLogOutCase
 import com.example.mypetapplication.base.BaseContentViewModel
+import com.example.mypetapplication.base.TopAppBarNavigationIcon
 import com.example.mypetapplication.home.data.HomeScreenContent
 import com.example.mypetapplication.home.map.HomeUiMapper
 import com.example.presentationmodule.R
 import com.example.mypetapplication.utils.SimpleNavigationEvent
 import com.example.presentationmodule.data.TopAppBarAction
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -43,10 +46,10 @@ class HomeViewModel @Inject constructor(
     }
     private val logOutProgressFlowSource =
         MutableStateFlow<Task<Unit>>(Task.Initial)
-    private val contentLiveDataSource = homeMainOptionsMappedFlowSource.asLiveData()
+
+    override val screenContentFlow: Flow<HomeScreenContent> = homeMainOptionsMappedFlowSource
 
     // Base fun(s)
-    override fun getTopAppBarTitleResId() = R.string.label_home
     override fun onLogOutClicked() {
         viewModelScope.launch {
             tryToLogOutCase.execute { task ->
@@ -64,6 +67,14 @@ class HomeViewModel @Inject constructor(
     val navigateToSpanishTop200VerbsEvent = SimpleNavigationEvent()
 
     init {
+        setTopAppBarNavigationIcon(TopAppBarNavigationIcon(
+            imageVector = Icons.Default.Menu,
+            callback = {}
+        ))
+        setTopAppBarTitleResId(R.string.label_home)
+
+        registerScreenContentSource(screenContentFlow)
+
         executeForSuccessTaskResultUseCase(getHomeFeaturesUseCase) {
             homeMainOptionsFlowSource.value = it
         }
@@ -81,7 +92,6 @@ class HomeViewModel @Inject constructor(
                 )
             }
         }.launchIn(viewModelScope)
-        registerContentSource(contentLiveDataSource)
     }
 
     private fun handleHomeMainOptionItemSelection(type: HomeMainOptionType) {

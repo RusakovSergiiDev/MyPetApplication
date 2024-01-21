@@ -14,11 +14,10 @@ class EnglishRulesFragment :
         get() = ScreenId.EnglishRulesScreen
 
     override fun provideView(): ComposeView = createCommonComposeScreen(
-        contentLiveData = viewModel.getScreenContentSource(),
-        contentScreen = { contentState ->
-            EnglishRulesScreen(contentState)
-        }
-    )
+        viewModel.fullScreenContentLiveData
+    ) { contentState ->
+        EnglishRulesScreen(contentState)
+    }
 
     override fun onSetupObservers() {
 

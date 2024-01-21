@@ -24,7 +24,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel() {
 
     companion object {
         private const val LOG_TAG = "BASE_VIEW_MODEL"
@@ -39,6 +39,7 @@ open class BaseViewModel : ViewModel() {
         Log.d(LOG_TAG, "errorHandler -> $exception")
         Log.d(LOG_TAG, "errorHandler -> ${customScope.isActive}")
     }
+    abstract val topAppBarContentLiveData: LiveData<TopAppBarContent>
 
     // External param(s)
     val isLoadingLiveData: LiveData<Boolean> = isContentLoadingFlowSource.asLiveData()

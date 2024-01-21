@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,61 +28,59 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.switchMap
-import com.example.mypetapplication.utils.undefined
+import com.example.mypetapplication.utils.log
 import com.example.presentationmodule.R
 import com.example.presentationmodule.AppTheme
 import com.example.presentationmodule.compose.topappbar.TopAppBarActionComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T : IBaseScreenContent> BaseComposeScreen(
-    onBackClicked: (() -> Unit)? = null,
-    isShowSnackbarError: State<String?>,
-    isShowLoading: State<Boolean>,
+fun <T : IScreenContent> BaseComposeScreen(
+    isShowGlobalSnackbarError: State<String?>,
+    isShowGlobalLoading: State<Boolean>,
+    isShowGlobalRetry: State<Boolean>,
     onRetryClicked: (() -> Unit)? = null,
-    isShowRetry: State<Boolean>,
-    fullScreenContentLiveData: LiveData<BaseFullComposeScreenContent<T>>,
+    topAppBarContentLiveData: LiveData<TopAppBarContent>,
+    screenContentLiveData: LiveData<T?>,
     contentScreen: @Composable (State<T?>) -> Unit
 ) {
-    val fullScreenContentState = fullScreenContentLiveData.observeAsState()
-    val screenContentState = fullScreenContentLiveData.switchMap { it.content }.observeAsState()
+    val topAppBarContentState = topAppBarContentLiveData.observeAsState()
+    val screenContentState = screenContentLiveData.observeAsState()
     AppTheme {
+        val topAppBarContent = topAppBarContentState.value
         Scaffold(
             topBar = {
-                val titleResId = fullScreenContentState.value?.topAppBarTitleResId
-                if (titleResId == undefined) {
-                    return@Scaffold
-                }
-                val titleText = titleResId?.let { stringResource(id = titleResId) }
-                val action =
-                    fullScreenContentState.value?.topAppBarAction?.observeAsState()?.value
-
+                topAppBarContent ?: return@Scaffold
+                if (!topAppBarContent.isShow) return@Scaffold
+                log("Base Screen Scaffold")
                 TopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                     title = {
-                        titleText ?: return@TopAppBar
+                        val titleResId = topAppBarContent.titleResId
+                        titleResId ?: return@TopAppBar
                         Text(
-                            text = titleText,
+                            text = stringResource(id = titleResId),
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 20.sp
                         )
                     },
                     navigationIcon = {
-                        onBackClicked ?: return@TopAppBar
-                        IconButton(onClick = { onBackClicked.invoke() }) {
+                        val navigationIcon = topAppBarContent.navigationIcon
+                        navigationIcon ?: return@TopAppBar
+                        IconButton(onClick = { navigationIcon.callback.invoke() }) {
                             Icon(
-                                imageVector = Icons.Filled.ArrowBack,
+                                imageVector = navigationIcon.imageVector,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     },
                     actions = {
-                        action?.let {
+                        val actions = topAppBarContent.actions
+                        actions.forEach {
                             TopAppBarActionComponent(topAppBarAction = it)
                         }
                     },
@@ -96,9 +92,10 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                         .padding(paddingValues)
                         .fillMaxSize()
                 ) {
+                    log("Base Screen Box")
                     contentScreen(screenContentState)
 
-                    val snackbarError = isShowSnackbarError.value
+                    val snackbarError = isShowGlobalSnackbarError.value
                     val isSnackBarErrorVisible = !snackbarError.isNullOrBlank()
                     AnimatedVisibility(
                         visible = isSnackBarErrorVisible,
@@ -115,8 +112,8 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                         )
                     }
 
-                    val isLoadingState = isShowLoading.value
-                    val isRetryState = isShowRetry.value
+                    val isLoadingState = isShowGlobalLoading.value
+                    val isRetryState = isShowGlobalRetry.value
                     if (isLoadingState) {
                         CircularProgressIndicator(
                             modifier = Modifier

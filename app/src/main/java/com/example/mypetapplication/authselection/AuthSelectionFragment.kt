@@ -17,7 +17,7 @@ class AuthSelectionFragment :
         get() = ScreenId.AuthenticationSelectionScreen
 
     override fun provideView(): ComposeView = createCommonComposeScreen(
-        viewModel.getScreenContentSource()
+        viewModel.fullScreenContentLiveData
     ) { contentState ->
         AuthSelectionScreen(contentState)
     }

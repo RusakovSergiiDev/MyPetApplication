@@ -1,6 +1,5 @@
 package com.example.mypetapplication.features.english
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.example.datamodule.models.EnglishIrregularVerbModel
 import com.example.logicmodule.usecases.firebase.GetEnglishIrregularVerbsTaskFlowOrLoadFromFBUseCase
@@ -11,6 +10,7 @@ import com.example.mypetapplication.utils.log
 import com.example.presentationmodule.R
 import com.example.presentationmodule.data.TopAppBarAction
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -34,30 +34,33 @@ class EnglishAllIrregularVerbsViewModel @Inject constructor(
             }
             uiMapper.mapToUiItems(models)
         }
-    private val contentLiveData: LiveData<EnglishAllIrregularScreenContent> =
+
+    override val screenContentFlow: Flow<EnglishAllIrregularScreenContent> =
         combine(
             isShowTranslateFlowSource,
             englishAllIrregularVerbsMappedFlow
         ) { isShowTranslate, englishAllIrregularVerbs ->
             log("combine")
             EnglishAllIrregularScreenContent(
-                isShowTranslate, englishAllIrregularVerbs
+                englishAllIrregularVerbs.onEach {
+                    it.setIsShowTranslateInUkrainian(isShowTranslate)
+                }
             )
-        }.asLiveData()
-
-    // Base fun(s)
-    override fun getTopAppBarTitleResId() = R.string.label_allEnglishIrregularVerbs
+        }
 
     init {
-        executeForSuccessTaskResultUseCase(getEnglishIrregularVerbsTaskFlowOrLoadFromFBUseCase) {
-            englishAllIrregularVerbsFlowSource.value = it
-        }
+        setupTopAppBar(titleResId = R.string.label_allEnglishIrregularVerbs)
         setTopAppBarAction(
             TopAppBarAction.ToggleAction(
                 onCheckedChange = { isShowTranslateFlowSource.value = it },
                 isChecked = isShowTranslateFlowSource.asLiveData()
             )
         )
-        registerContentSource(contentLiveData)
+
+        registerScreenContentSource(screenContentFlow)
+
+        executeForSuccessTaskResultUseCase(getEnglishIrregularVerbsTaskFlowOrLoadFromFBUseCase) {
+            englishAllIrregularVerbsFlowSource.value = it
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.mypetapplication.features.english
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.datamodule.models.english.EnglishRulesModel
 import com.example.datamodule.types.Task
 import com.example.logicmodule.usecases.firebase.GetEnglishRulesTaskFlowOrLoadFromFBUseCase
@@ -12,7 +13,9 @@ import com.example.mypetapplication.features.english.mappers.EnglishUiMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,20 +38,22 @@ class EnglishRulesViewModel @Inject constructor(
                 )
             }
         }
-    private val contentLiveData: LiveData<EnglishRulesScreenContent> =
-        englishRulesScreenContentFlowSource.asLiveData()
+    override val screenContentFlow: Flow<EnglishRulesScreenContent> =
+        englishRulesScreenContentFlowSource
 
     // Base fun(s)
-    override fun getTopAppBarTitleResId() = R.string.label_englishRules
     override fun onRetryClicked() {
         retryUseCase(getEnglishRulesTaskFlowOrLoadFromFBUseCase)
     }
 
     init {
+        setupTopAppBar(titleResId = R.string.label_englishRules)
+
         executeForTaskResultUseCase(getEnglishRulesTaskFlowOrLoadFromFBUseCase) { task ->
             englishRulesFlowSource.value = task
-            setTopAppBarAction(task.createRetryTopAppBarAction { onRetryClicked() })
+            task.createRetryTopAppBarAction { onRetryClicked() }?.let { action ->
+                setTopAppBarAction(action)
+            }
         }
-        registerContentSource(contentLiveData)
     }
 }
