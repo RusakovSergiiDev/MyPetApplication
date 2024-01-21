@@ -46,6 +46,7 @@ open class BaseViewModel : ViewModel() {
         isContentInErrorStateFlowSource.asLiveData()
 
     // Event(s)
+    val snackbarErrorEvent = SingleLiveData<String?>()
     val navigationBackEvent = SimpleNavigationEvent()
     val logOutEvent = SimpleNavigationEvent()
     val showErrorEvent = SingleLiveData<String>()
@@ -59,7 +60,7 @@ open class BaseViewModel : ViewModel() {
         navigationBackEvent.call()
     }
 
-    fun onLogOutClicked() {
+    open fun onLogOutClicked() {
         logOutEvent.call()
     }
 

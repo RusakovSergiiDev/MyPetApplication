@@ -1,22 +1,32 @@
 package com.example.mypetapplication.home
 
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.datamodule.models.HomeMainOptionModel
 import com.example.datamodule.types.HomeMainOptionType
+import com.example.datamodule.types.Task
+import com.example.datamodule.types.isLoading
+import com.example.datamodule.types.isSuccess
 import com.example.logicmodule.usecases.GetHomeFeaturesUseCase
+import com.example.logicmodule.usecases.firebase.TryToLogOutCase
 import com.example.mypetapplication.base.BaseContentViewModel
 import com.example.mypetapplication.home.data.HomeScreenContent
 import com.example.mypetapplication.home.map.HomeUiMapper
 import com.example.presentationmodule.R
 import com.example.mypetapplication.utils.SimpleNavigationEvent
+import com.example.presentationmodule.data.TopAppBarAction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     getHomeFeaturesUseCase: GetHomeFeaturesUseCase,
+    private val tryToLogOutCase: TryToLogOutCase,
     uiMapper: HomeUiMapper
 ) : BaseContentViewModel<HomeScreenContent>() {
 
@@ -31,10 +41,22 @@ class HomeViewModel @Inject constructor(
             )
         )
     }
+    private val logOutProgressFlowSource =
+        MutableStateFlow<Task<Unit>>(Task.Initial)
     private val contentLiveDataSource = homeMainOptionsMappedFlowSource.asLiveData()
 
     // Base fun(s)
     override fun getTopAppBarTitleResId() = R.string.label_home
+    override fun onLogOutClicked() {
+        viewModelScope.launch {
+            tryToLogOutCase.execute { task ->
+                logOutProgressFlowSource.value = task
+                if (task.isSuccess()) {
+                    logOutEvent.call()
+                }
+            }
+        }
+    }
 
     // Event(s)
     val navigateToEnglishRulesEvent = SimpleNavigationEvent()
@@ -45,6 +67,20 @@ class HomeViewModel @Inject constructor(
         executeForSuccessTaskResultUseCase(getHomeFeaturesUseCase) {
             homeMainOptionsFlowSource.value = it
         }
+        logOutProgressFlowSource.onEach {
+            if (it.isLoading()) {
+                setTopAppBarAction(
+                    TopAppBarAction.Loading
+                )
+            } else {
+                setTopAppBarAction(
+                    TopAppBarAction.TextAction(
+                        textResId = R.string.label_logOut,
+                        callback = { onLogOutClicked() }
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
         registerContentSource(contentLiveDataSource)
     }
 

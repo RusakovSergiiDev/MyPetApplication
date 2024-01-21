@@ -1,7 +1,14 @@
 package com.example.mypetapplication.base
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -17,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -35,6 +43,7 @@ import com.example.presentationmodule.compose.topappbar.TopAppBarActionComponent
 @Composable
 fun <T : IBaseScreenContent> BaseComposeScreen(
     onBackClicked: (() -> Unit)? = null,
+    isShowSnackbarError: State<String?>,
     isShowLoading: State<Boolean>,
     onRetryClicked: (() -> Unit)? = null,
     isShowRetry: State<Boolean>,
@@ -51,7 +60,8 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                     return@Scaffold
                 }
                 val titleText = titleResId?.let { stringResource(id = titleResId) }
-                val action = fullScreenContentState.value?.topAppBarAction?.observeAsState()?.value
+                val action =
+                    fullScreenContentState.value?.topAppBarAction?.observeAsState()?.value
 
                 TopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -82,6 +92,27 @@ fun <T : IBaseScreenContent> BaseComposeScreen(
                         }
                     },
                 )
+            },
+            snackbarHost = {
+                val snackbarError = isShowSnackbarError.value
+                val isSnackBarErrorVisible = !snackbarError.isNullOrBlank()
+                AnimatedVisibility(
+                    visible = isSnackBarErrorVisible,
+                    enter = fadeIn() + slideInVertically(),
+                    exit = fadeOut() + slideOutVertically()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(16.dp),
+                            text = snackbarError ?: "",
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             },
             content = { paddingValues ->
                 Box(

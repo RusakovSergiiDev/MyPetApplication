@@ -10,6 +10,7 @@ data class AuthSelectionScreenContent(
     val isInputEnable: LiveData<Boolean>,
     val isButtonEnable: LiveData<Boolean>,
     val isLoading: LiveData<Boolean>,
+    val isShowAuthError: LiveData<String?>,
     val additionalText: LiveData<Int>,
     val onEmailChanged: (String) -> Unit,
     val onPasswordChanged: (String) -> Unit,

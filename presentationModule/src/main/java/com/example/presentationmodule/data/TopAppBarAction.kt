@@ -20,4 +20,6 @@ sealed class TopAppBarAction {
         val onCheckedChange: (Boolean) -> Unit,
         val isChecked: LiveData<Boolean>
     ) : TopAppBarAction()
+
+    object Loading : TopAppBarAction()
 }

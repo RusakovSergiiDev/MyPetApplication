@@ -1,5 +1,6 @@
 package com.example.mypetapplication.authselection
 
+import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import com.example.mypetapplication.authselection.compose.AuthSelectionScreen
 import com.example.mypetapplication.base.BaseFragment
@@ -22,6 +23,9 @@ class AuthSelectionFragment :
     }
 
     override fun onSetupObservers() {
+        viewModel.showErrorEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
         viewModel.navigateToHomeEvent.observe(viewLifecycleOwner) {
             findNavController().navigate(R.id.action_authSelectionFragment_to_homeFragment)
         }

@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/spanishTop200VerbsFragment"
-        android:name="com.example.mypetapplication.features.spain.SpanishTop200VerbsFragment" />
+        android:name="com.example.mypetapplication.features.spain.SpanishTop200VerbsFragment"/>
 
 </navigation>

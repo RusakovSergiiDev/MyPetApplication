@@ -2,6 +2,8 @@ package com.example.presentationmodule.compose.topappbar
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +60,15 @@ fun TopAppBarActionComponent(topAppBarAction: TopAppBarAction?) {
                     ),
                     onCheckedChange = { action.onCheckedChange(it) },
                     checked = checkedState.value
+                )
+            }
+
+            is TopAppBarAction.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

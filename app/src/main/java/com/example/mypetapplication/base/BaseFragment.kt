@@ -58,6 +58,7 @@ abstract class BaseFragment<VM : BaseViewModel>(
             setContent {
                 BaseComposeScreen(
                     onBackClicked = getOnBackClicked(isShowBackAction),
+                    isShowSnackbarError = viewModel.snackbarErrorEvent.observeAsState(initial = null),
                     isShowLoading = viewModel.isLoadingLiveData.observeAsState(initial = false),
                     onRetryClicked = { viewModel.onRetryClicked() },
                     isShowRetry = viewModel.isContentInErrorStateLiveData.observeAsState(initial = false),

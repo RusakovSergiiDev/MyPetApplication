@@ -24,10 +24,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.asDeferred
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseRepository @Inject constructor() {
@@ -59,30 +57,12 @@ class FirebaseRepository @Inject constructor() {
 
     fun getCurrentUser() = firebaseAuth.currentUser
 
-    fun trySignIn(email: String, password: String, callback: (Boolean) -> Unit) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                callback.invoke(task.isSuccessful)
-            }
-    }
-
     fun trySignInAsync(email: String, password: String): Deferred<AuthResult> {
         return firebaseAuth.signInWithEmailAndPassword(email, password).asDeferred()
     }
 
-    suspend fun trySignIn(email: String, password: String): Flow<Task<Boolean>> = callbackFlow {
-        delay(1000)
-        trySend(Task.Loading)
-        try {
-            val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val user = result.user
-            trySend(Task.Success(user != null))
-        } catch (e: Exception) {
-            trySend(Task.Error(e.message ?: "no message"))
-        }
-        val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-        val user = result.user
-        trySend(Task.Success(user != null))
+    fun tryLogOut() {
+        return firebaseAuth.signOut()
     }
 
     suspend fun getEnglishRulesTaskFlowOrLoad(): Flow<Task<EnglishRulesModel>> {
