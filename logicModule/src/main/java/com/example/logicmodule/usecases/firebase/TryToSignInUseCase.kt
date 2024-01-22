@@ -1,7 +1,7 @@
 package com.example.logicmodule.usecases.firebase
 
 import com.example.datamodule.types.Task
-import com.example.logicmodule.FirebaseRepository
+import com.example.logicmodule.repository.FirebaseRepository
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 

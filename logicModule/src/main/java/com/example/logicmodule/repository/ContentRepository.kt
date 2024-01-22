@@ -1,11 +1,9 @@
-package com.example.logicmodule
+package com.example.logicmodule.repository
 
-import android.util.Log
 import com.example.datamodule.dto.server.FeatureDto
 import com.example.datamodule.mapper.mapToEnglishRulesModel
 import com.example.datamodule.models.english.EnglishRulesModel
 import com.example.datamodule.types.Task
-import com.example.datamodule.types.getLogName
 import com.example.datamodule.types.isInitial
 import com.example.logicmodule.network.EnglishService
 import com.example.logicmodule.network.FeatureService
@@ -67,8 +65,6 @@ class ContentRepository @Inject constructor(
     suspend fun loadEnglishRules() {
         englishRulesTaskFlowSource.value = Task.Loading
         try {
-            delay(3000)
-            throw NullPointerException("ABC")
             val englishRules = englishService.getEnglishRules()
             val englishRulesMapped = englishRules.mapToEnglishRulesModel()
             englishRulesTaskFlowSource.value = (Task.Success(englishRulesMapped))
@@ -78,9 +74,6 @@ class ContentRepository @Inject constructor(
     }
 
     suspend fun getTestDataTaskFlowOrLoad(withError: Boolean = false): Flow<Task<Unit>> {
-        Log.d(LOG_TAG, "getTestDataTaskFlowOrLoad(withError=$withError)")
-        val currentTestDataTask = testDataTaskFlowSource.value
-        Log.d(LOG_TAG, "currentTestDataTask: ${currentTestDataTask.getLogName()}")
         if (testDataTaskFlowSource.value.isInitial()) {
             coroutineScope {
                 if (withError) {
@@ -94,41 +87,22 @@ class ContentRepository @Inject constructor(
     }
 
     suspend fun loadTestData() {
-        Log.d(LOG_TAG, "=====")
-        Log.d(LOG_TAG, "loadTestData()")
         testDataTaskFlowSource.value = Task.Loading
-        Log.d(LOG_TAG, "Task.Loading")
         try {
             delay(5000)
             testDataTaskFlowSource.value = (Task.Success(Unit))
-            Log.d(LOG_TAG, "Task.Success")
         } catch (e: Exception) {
-            Log.d(LOG_TAG, "catch:${e.message}")
-            Log.d(LOG_TAG, "Task.Error:${e.message}")
             testDataTaskFlowSource.value = (Task.Error(e.message.orEmpty()))
         }
     }
 
     suspend fun loadTestDataWithError() {
-        Log.d(LOG_TAG, "=====")
-        Log.d(LOG_TAG, "loadTestDataWithError()")
         testDataTaskFlowSource.value = Task.Loading
-        Log.d(LOG_TAG, "Task.Loading")
         try {
             delay(5000)
-            Log.d(LOG_TAG, "throw error")
             throw NullPointerException("Hardcoded NPE")
         } catch (e: Exception) {
-            Log.d(LOG_TAG, "catch:${e.message}")
-            Log.d(LOG_TAG, "Task.Error:${e.message}")
             testDataTaskFlowSource.value = (Task.Error(e.message.orEmpty()))
         }
-    }
-
-    suspend fun loadDataWithDelay(delay: Long): String {
-        Log.d("myLogs", "loadDataWithDelay:$delay start")
-        delay(delay)
-        Log.d("myLogs", "loadDataWithDelay:$delay end")
-        return "Result of $delay"
     }
 }

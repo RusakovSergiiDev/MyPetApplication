@@ -1,4 +1,4 @@
-package com.example.logicmodule
+package com.example.logicmodule.repository
 
 import com.example.datamodule.dto.EnglishIrregularVerbDto
 import com.example.datamodule.dto.SpanishVerbDto

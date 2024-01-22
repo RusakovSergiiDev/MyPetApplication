@@ -2,7 +2,7 @@ package com.example.logicmodule.usecases
 
 import com.example.datamodule.dto.server.FeatureDto
 import com.example.datamodule.types.Task
-import com.example.logicmodule.ContentRepository
+import com.example.logicmodule.repository.ContentRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

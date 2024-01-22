@@ -1,7 +1,6 @@
 package com.example.logicmodule.di
 
-import com.example.logicmodule.ContentRepository
-import com.example.logicmodule.FirebaseRepository
+import com.example.logicmodule.repository.ContentRepository
 import com.example.logicmodule.network.EnglishService
 import com.example.logicmodule.network.FeatureService
 import dagger.Module

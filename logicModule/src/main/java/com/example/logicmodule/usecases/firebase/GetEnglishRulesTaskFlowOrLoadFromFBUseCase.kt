@@ -2,7 +2,7 @@ package com.example.logicmodule.usecases.firebase
 
 import com.example.datamodule.models.english.EnglishRulesModel
 import com.example.datamodule.types.Task
-import com.example.logicmodule.FirebaseRepository
+import com.example.logicmodule.repository.FirebaseRepository
 import com.example.logicmodule.usecases.IFlowTaskUseCase
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

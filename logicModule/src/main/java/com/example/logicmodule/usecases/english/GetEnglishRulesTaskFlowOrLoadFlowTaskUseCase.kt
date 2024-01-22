@@ -2,7 +2,7 @@ package com.example.logicmodule.usecases.english
 
 import com.example.datamodule.models.english.EnglishRulesModel
 import com.example.datamodule.types.Task
-import com.example.logicmodule.ContentRepository
+import com.example.logicmodule.repository.ContentRepository
 import com.example.logicmodule.usecases.IFlowTaskUseCase
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

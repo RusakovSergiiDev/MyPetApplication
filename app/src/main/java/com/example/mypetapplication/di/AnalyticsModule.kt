@@ -1,6 +1,6 @@
 package com.example.mypetapplication.di
 
-import com.example.logicmodule.AnalyticsRepository
+import com.example.logicmodule.repository.AnalyticsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

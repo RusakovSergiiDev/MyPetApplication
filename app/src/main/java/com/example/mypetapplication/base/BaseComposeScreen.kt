@@ -52,7 +52,6 @@ fun <T : IScreenContent> BaseComposeScreen(
             topBar = {
                 topAppBarContent ?: return@Scaffold
                 if (!topAppBarContent.isShow) return@Scaffold
-                log("Base Screen Scaffold")
                 TopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -92,7 +91,6 @@ fun <T : IScreenContent> BaseComposeScreen(
                         .padding(paddingValues)
                         .fillMaxSize()
                 ) {
-                    log("Base Screen Box")
                     contentScreen(screenContentState)
 
                     val snackbarError = isShowGlobalSnackbarError.value
