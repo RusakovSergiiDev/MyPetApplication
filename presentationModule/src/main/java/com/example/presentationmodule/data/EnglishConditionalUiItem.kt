@@ -1,6 +1,6 @@
-package com.example.datamodule.models.english
+package com.example.presentationmodule.data
 
-data class EnglishConditionalRuleModel(
+data class EnglishConditionalUiItem(
     val conditionalName: String,
     val structure: String,
     val example: String

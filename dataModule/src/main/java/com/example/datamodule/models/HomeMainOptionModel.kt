@@ -7,5 +7,4 @@ data class HomeMainOptionModel(
     val type: HomeMainOptionType,
     @StringRes val titleResId: Int,
     @StringRes val descriptionResId: Int? = null,
-    val onHomeMainOptionItemClicked: ((HomeMainOptionType) -> Unit)? = null
 )

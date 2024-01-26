@@ -1,8 +1,8 @@
 package com.example.mypetapplication.features.english.data
 
-import com.example.datamodule.models.english.EnglishRulesModel
-import com.example.mypetapplication.base.IBaseScreenContent
+import com.example.mypetapplication.base.IScreenContent
+import com.example.presentationmodule.data.EnglishRulesUiModel
 
 class EnglishRulesScreenContent(
-    val englishRulesModel: EnglishRulesModel?
-) : IBaseScreenContent
+    val englishRulesModel: EnglishRulesUiModel
+) : IScreenContent

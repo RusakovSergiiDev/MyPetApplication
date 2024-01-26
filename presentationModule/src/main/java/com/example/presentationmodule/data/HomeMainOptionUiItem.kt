@@ -1,8 +1,8 @@
 package com.example.presentationmodule.data
 
 
-data class HomeMainOptionUIiItem(
+data class HomeMainOptionUiItem(
     val title: String,
     val description: String? = null,
-    val onHomeMainOptionItemClicked: (() -> Unit)? = null
+    val callback: (() -> Unit)? = null
 )

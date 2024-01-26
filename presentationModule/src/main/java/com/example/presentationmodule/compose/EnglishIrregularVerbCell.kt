@@ -17,14 +17,14 @@ import com.example.presentationmodule.data.EnglishIrregularVerbUiItem
 
 @Composable
 fun EnglishIrregularVerbRowCell(
-    item: EnglishIrregularVerbUiItem,
-    isShowTranslate: Boolean = false
+    item: EnglishIrregularVerbUiItem
 ) {
     val isHighlighted = item.index % 2 != 0
     val cellColor = if (isHighlighted) MaterialTheme.colorScheme.secondaryContainer
     else MaterialTheme.colorScheme.background
     val textColor = if (isHighlighted) MaterialTheme.colorScheme.onSecondaryContainer
     else MaterialTheme.colorScheme.onBackground
+    val isShowTranslate = item.isShowTranslateInUkrainianState.value
     Column(
         modifier = Modifier
             .fillMaxWidth()

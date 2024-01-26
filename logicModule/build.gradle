@@ -38,7 +38,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
 
     // Firebase
-    implementation 'com.google.firebase:firebase-auth-ktx:22.3.0'
+    implementation 'com.google.firebase:firebase-auth-ktx:22.3.1'
     implementation 'com.google.firebase:firebase-database:20.3.0'
 
     // Hilt
@@ -51,4 +51,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
 
     implementation project(path: ':dataModule')
+    implementation project(path: ':presentationModule')
 }

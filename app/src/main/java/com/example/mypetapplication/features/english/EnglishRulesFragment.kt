@@ -1,9 +1,6 @@
 package com.example.mypetapplication.features.english
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import com.example.datamodule.types.ScreenId
 import com.example.mypetapplication.base.BaseFragment
 import com.example.mypetapplication.features.english.compose.EnglishRulesScreen
@@ -16,20 +13,13 @@ class EnglishRulesFragment :
     override val screenId: ScreenId
         get() = ScreenId.EnglishRulesScreen
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = createCommonComposeScreen(
-        contentLiveData = viewModel.screenContentLiveData,
-        content = { liveData ->
-            EnglishRulesScreen(liveData)
-        }
-    )
+    override fun provideView(): ComposeView = createCommonComposeScreen(
+        viewModel.fullScreenContentLiveData
+    ) { contentState ->
+        EnglishRulesScreen(contentState)
+    }
 
     override fun onSetupObservers() {
-//        viewModel.showErrorEvent.observe(this) {
-//            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-//        }
+
     }
 }

@@ -1,47 +1,63 @@
 package com.example.mypetapplication.features.english
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.datamodule.models.EnglishIrregularVerbModel
-import com.example.datamodule.types.Task
-import com.example.logicmodule.usecases.firebase.GetEnglishIrregularVerbsTaskFlowOrLoadUseCase
-import com.example.mypetapplication.base.BaseViewModel
+import com.example.logicmodule.usecases.firebase.GetEnglishIrregularVerbsTaskFlowOrLoadFromFBUseCase
+import com.example.mypetapplication.base.BaseContentViewModel
+import com.example.mypetapplication.features.english.data.EnglishAllIrregularVerbsScreenContent
+import com.example.mypetapplication.features.english.mappers.EnglishUiMapper
+import com.example.presentationmodule.R
+import com.example.presentationmodule.data.TopAppBarAction
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class EnglishAllIrregularVerbsViewModel @Inject constructor(
-    private val getEnglishIrregularVerbsTaskFlowOrLoadUseCase: GetEnglishIrregularVerbsTaskFlowOrLoadUseCase
-) : BaseViewModel() {
+    getEnglishIrregularVerbsTaskFlowOrLoadFromFBUseCase: GetEnglishIrregularVerbsTaskFlowOrLoadFromFBUseCase,
+    uiMapper: EnglishUiMapper,
+) : BaseContentViewModel<EnglishAllIrregularVerbsScreenContent>() {
 
     // Internal param(s)
-    private val englishIrregularVerbsTaskSourceFlow =
-        MutableStateFlow<Task<List<EnglishIrregularVerbModel>>>(Task.Initial)
-    private val englishIrregularVerbsSourceFlow = englishIrregularVerbsTaskSourceFlow.map {
-        if (it is Task.Success) it.data
-        else emptyList()
-    }
-    private val englishIrregularVerbsMappedSourceFlow =
-        englishIrregularVerbsSourceFlow.map { models ->
+    private val isShowTranslateFlowSource = MutableStateFlow(false)
+    private val englishAllIrregularVerbsFlowSource =
+        MutableStateFlow<List<EnglishIrregularVerbModel>>(emptyList())
+    private val englishAllIrregularVerbsMappedFlow =
+        englishAllIrregularVerbsFlowSource.map { models ->
             models.forEachIndexed { index, englishIrregularVerbModel ->
                 englishIrregularVerbModel.index = index
             }
-            models
+            uiMapper.mapToUiItems(models)
         }
 
-    // External param(s)
-    val englishIrregularVerbUiItemsLiveData: LiveData<List<EnglishIrregularVerbModel>> =
-        englishIrregularVerbsMappedSourceFlow.asLiveData()
+    override val screenContentFlow: Flow<EnglishAllIrregularVerbsScreenContent> =
+        combine(
+            isShowTranslateFlowSource,
+            englishAllIrregularVerbsMappedFlow
+        ) { isShowTranslate, englishAllIrregularVerbs ->
+            EnglishAllIrregularVerbsScreenContent(
+                englishAllIrregularVerbs.onEach {
+                    it.setIsShowTranslateInUkrainian(isShowTranslate)
+                }
+            )
+        }
 
     init {
-        viewModelScope.launch {
-            getEnglishIrregularVerbsTaskFlowOrLoadUseCase.execute().collect {
-                englishIrregularVerbsTaskSourceFlow.value = it
-            }
+        setupTopAppBar(titleResId = R.string.label_allEnglishIrregularVerbs)
+        setTopAppBarAction(
+            TopAppBarAction.ToggleAction(
+                onCheckedChange = { isShowTranslateFlowSource.value = it },
+                isChecked = isShowTranslateFlowSource.asLiveData()
+            )
+        )
+
+        registerScreenContentSource(screenContentFlow)
+
+        executeForSuccessTaskResultUseCase(getEnglishIrregularVerbsTaskFlowOrLoadFromFBUseCase) {
+            englishAllIrregularVerbsFlowSource.value = it
         }
     }
 }

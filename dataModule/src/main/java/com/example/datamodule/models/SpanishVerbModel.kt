@@ -3,6 +3,5 @@ package com.example.datamodule.models
 data class SpanishVerbModel(
     val english: String,
     val spanish: String,
-    val ukrainian: String,
-    var index: Int = 0
+    val ukrainian: String
 )

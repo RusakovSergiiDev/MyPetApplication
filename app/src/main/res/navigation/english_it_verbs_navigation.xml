@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/english_it_verbs_navigation"
+    app:startDestination="@id/englishItVerbsFragment">
+
+    <fragment
+        android:id="@+id/englishItVerbsFragment"
+        android:name="com.example.mypetapplication.features.english.EnglishItVerbsFragment"
+        android:label="fragment_english_rules" />
+
+</navigation>

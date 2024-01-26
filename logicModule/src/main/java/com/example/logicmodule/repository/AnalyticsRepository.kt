@@ -1,4 +1,4 @@
-package com.example.logicmodule
+package com.example.logicmodule.repository
 
 import android.util.Log
 import com.example.datamodule.types.ScreenId

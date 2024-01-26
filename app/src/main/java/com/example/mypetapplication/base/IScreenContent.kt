@@ -1,3 +1,3 @@
 package com.example.mypetapplication.base
 
-interface IBaseScreenContent
+interface IScreenContent

@@ -1,6 +1,6 @@
 package com.example.logicmodule.di
 
-import com.example.logicmodule.FirebaseRepository
+import com.example.logicmodule.repository.FirebaseRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

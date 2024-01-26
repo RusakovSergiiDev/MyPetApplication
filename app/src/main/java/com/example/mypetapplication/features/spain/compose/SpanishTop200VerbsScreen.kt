@@ -8,22 +8,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import com.example.mypetapplication.base.BaseFullComposeScreenContent
 import com.example.mypetapplication.features.spain.SpanishTop200VerbsScreenContent
 import com.example.presentationmodule.compose.SpanishVerbRowCell
 
 @Composable
 fun SpanishTop200VerbsScreen(
-    content: LiveData<BaseFullComposeScreenContent<SpanishTop200VerbsScreenContent>>
+    contentState: State<SpanishTop200VerbsScreenContent?>
 ) {
     Column(
         modifier = Modifier
@@ -54,13 +53,13 @@ fun SpanishTop200VerbsScreen(
                 fontSize = 16.sp
             )
         }
-        val items = content.value?.screenContent?.observeAsState()?.value?.items ?: emptyList()
+        val items = contentState.value?.items ?: emptyList()
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            items(items) { item ->
-                SpanishVerbRowCell(item = item)
+            itemsIndexed(items) { index, item ->
+                SpanishVerbRowCell(item = item, index = index)
             }
         }
     }

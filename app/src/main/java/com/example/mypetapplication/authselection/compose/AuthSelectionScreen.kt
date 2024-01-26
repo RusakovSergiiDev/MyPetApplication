@@ -4,87 +4,87 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.presentationmodule.R
+import com.example.mypetapplication.authselection.data.AuthSelectionScreenContent
+import com.example.presentationmodule.compose.button.MyPetButton
+import com.example.presentationmodule.compose.button.MyPetButtonState
 
 @Composable
 fun AuthSelectionScreen(
-    isSignInState: State<Boolean>,
-    emailState: State<String>,
-    passwordState: State<String>,
-    isSignInEnableState: State<Boolean>,
-    onEmailChanged: (String) -> Unit,
-    onPasswordChanged: (String) -> Unit,
-    onSwitchToSignIn: () -> Unit,
-    onSwitchToSignUp: () -> Unit,
-    onSignInClicked: () -> Unit,
-    onSignUpClicked: () -> Unit,
+    contentState: State<AuthSelectionScreenContent?>,
 ) {
+    val content = contentState.value ?: return
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
-        val isSignIn = isSignInState.value
+        val isSignInState = content.isSignInState.observeAsState(initial = false).value
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val isScreenBlocked = content.isScreenBlocked.observeAsState(initial = false).value
+            val emailFromContent = content.email.observeAsState(initial = "").value
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = emailState.value,
+                value = emailFromContent,
                 onValueChange = { email ->
-                    onEmailChanged.invoke(email)
+                    content.onEmailChanged.invoke(email)
                 },
+                enabled = !isScreenBlocked,
                 label = { Text("Email") },
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
+            val passwordFromContent = content.password.observeAsState(initial = "").value
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = passwordState.value,
-                onValueChange = { password ->
-                    onPasswordChanged.invoke(password)
+                value = passwordFromContent,
+                onValueChange = { email ->
+                    content.onPasswordChanged.invoke(email)
                 },
+                enabled = !isScreenBlocked,
                 label = { Text("Password") },
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(24.dp))
-            val signButtonText = if (isSignIn) "SIGN IN" else "SIGN UP"
-            val signButtonCallback = if (isSignIn) onSignInClicked else onSignUpClicked
-            Button(
-                onClick = { signButtonCallback.invoke() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                enabled = isSignInEnableState.value
-            ) {
-                Text(signButtonText)
+            val authButtonCallback = content.onAuthButtonClicked
+            val authButtonState =
+                content.buttonState.observeAsState(initial = MyPetButtonState.Disable).value
+            val authButtonTextResId = if (isSignInState) R.string.sign_in else R.string.sign_up
+            MyPetButton(textResId = authButtonTextResId, state = authButtonState) {
+                authButtonCallback.invoke()
             }
             Spacer(modifier = Modifier.height(16.dp))
-            val additionalText =
-                if (isSignIn) "Don't have an account? Sign Up" else "Do you already have an account? Sign In"
-            val additionalTextCallback = if (isSignIn) onSwitchToSignUp else onSwitchToSignIn
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        additionalTextCallback.invoke()
-                    },
-                text = additionalText,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 14.sp
-            )
+            val additionalTextResId = content.additionalText.observeAsState().value
+            val additionalTextCallback = content.onSwitchAuthTypeClicked
+            additionalTextResId?.let { textResId ->
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { additionalTextCallback.invoke() },
+                    text = stringResource(id = textResId),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 14.sp
+                )
+            }
+
         }
     }
 }

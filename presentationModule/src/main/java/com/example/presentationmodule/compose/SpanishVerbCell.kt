@@ -16,9 +16,10 @@ import com.example.presentationmodule.data.SpanishVerbUiItem
 
 @Composable
 fun SpanishVerbRowCell(
-    item: SpanishVerbUiItem
+    item: SpanishVerbUiItem,
+    index: Int
 ) {
-    val isHighlighted = item.index % 2 != 0
+    val isHighlighted = index % 2 != 0
     val cellColor = if (isHighlighted) MaterialTheme.colorScheme.secondaryContainer
     else MaterialTheme.colorScheme.background
     val textColor = if (isHighlighted) MaterialTheme.colorScheme.onSecondaryContainer
