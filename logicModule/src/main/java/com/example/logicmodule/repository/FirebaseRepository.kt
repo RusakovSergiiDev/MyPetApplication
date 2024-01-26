@@ -1,16 +1,21 @@
 package com.example.logicmodule.repository
 
+import android.util.Log
 import com.example.datamodule.dto.EnglishIrregularVerbDto
+import com.example.datamodule.dto.EnglishItVerbDto
 import com.example.datamodule.dto.SpanishVerbDto
 import com.example.datamodule.dto.server.EnglishRulesDto
 import com.example.datamodule.mapper.mapSpanishVerbModel
 import com.example.datamodule.mapper.mapToEnglishIrregularVerbModel
+import com.example.datamodule.mapper.mapToEnglishItVerbModel
 import com.example.datamodule.mapper.mapToEnglishRulesModel
 import com.example.datamodule.models.EnglishIrregularVerbModel
 import com.example.datamodule.models.SpanishVerbModel
+import com.example.datamodule.models.english.EnglishItVerbModel
 import com.example.datamodule.models.english.EnglishRulesModel
 import com.example.datamodule.types.Task
 import com.example.datamodule.types.isInitial
+import com.example.datamodule.types.isSuccess
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -20,12 +25,15 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.asDeferred
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FirebaseRepository @Inject constructor() {
@@ -33,6 +41,7 @@ class FirebaseRepository @Inject constructor() {
     companion object {
         private const val LOG_TAG = "FirebaseLogTag"
         private const val ENGLISH_RULES_PATH = "source/english/englishRules"
+        private const val ENGLISH_IT_VERBS_PATH = "source/english/englishItVerbs"
         private const val ENGLISH_IRREGULAR_VERBS_PATH = "source/english/englishAllIrregularVerbs"
         private const val SPANISH_TOP_200_VERBS_PATH = "source/spanish/verbs/top200"
     }
@@ -40,18 +49,25 @@ class FirebaseRepository @Inject constructor() {
     // Firebase param(s)
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val database = Firebase.database
-    private val englishAllIrregularVerbsReference =
-        database.getReference(ENGLISH_IRREGULAR_VERBS_PATH)
     private val englishRulesReference =
         database.getReference(ENGLISH_RULES_PATH)
+    private val englishItVerbsReference =
+        database.getReference(ENGLISH_IT_VERBS_PATH)
+    private val englishAllIrregularVerbsReference =
+        database.getReference(ENGLISH_IRREGULAR_VERBS_PATH)
     private val spanishTop200VerbsReference =
         database.getReference(SPANISH_TOP_200_VERBS_PATH)
 
+    // Storage param(s)
+    private val englishItVerbs = mutableListOf<EnglishItVerbModel>()
+
     // Internal param(s)
-    private val englishIrregularVerbsTaskFlowSource =
-        MutableStateFlow<Task<List<EnglishIrregularVerbModel>>>(Task.Initial)
     private val englishRulesFlowSource =
         MutableStateFlow<Task<EnglishRulesModel>>(Task.Initial)
+    private val englishItVerbsFlowSource =
+        MutableStateFlow<Task<List<EnglishItVerbModel>>>(Task.Initial)
+    private val englishIrregularVerbsTaskFlowSource =
+        MutableStateFlow<Task<List<EnglishIrregularVerbModel>>>(Task.Initial)
     private val spanishTop200VerbsTaskFlowSource =
         MutableStateFlow<Task<List<SpanishVerbModel>>>(Task.Initial)
 
@@ -75,6 +91,15 @@ class FirebaseRepository @Inject constructor() {
             }
         }
         return englishRulesFlowSource
+    }
+
+    suspend fun getEnglishItVerbsTaskFlowOrLoad(): Flow<Task<List<EnglishItVerbModel>>> {
+        if (englishItVerbs.isEmpty()) {
+            withContext(Dispatchers.IO) {
+                loadEnglishItVerbs()
+            }
+        }
+        return englishItVerbsFlowSource
     }
 
     suspend fun getEnglishIrregularVerbsTaskFlowOrLoad(): Flow<Task<List<EnglishIrregularVerbModel>>> {
@@ -106,6 +131,25 @@ class FirebaseRepository @Inject constructor() {
             callback = { task ->
                 processCallbackEvent(
                     loadingTaskFlow = englishRulesFlowSource,
+                    task = task
+                )
+            }
+        )
+    }
+
+    suspend fun loadEnglishItVerbs() {
+        delay(1000)
+        loadListDataFromFirebase<EnglishItVerbDto, EnglishItVerbModel>(
+            reference = englishItVerbsReference,
+            mapper = { it.mapToEnglishItVerbModel() },
+            callback = { task ->
+                if (task is Task.Success) {
+                    val data = task.data
+                    englishItVerbs.clear()
+                    englishItVerbs.addAll(data)
+                }
+                processListCallbackForSharedFlowEvent(
+                    loadingTaskFlow = englishItVerbsFlowSource,
                     task = task
                 )
             }
@@ -150,6 +194,20 @@ class FirebaseRepository @Inject constructor() {
             is Task.Empty -> Task.Empty
         }
         loadingTaskFlow.value = result
+    }
+
+    private fun <T> processListCallbackForSharedFlowEvent(
+        loadingTaskFlow: MutableSharedFlow<Task<List<T>>>,
+        task: Task<List<T>>
+    ) {
+        val result = when (task) {
+            is Task.Success -> Task.Success(task.data)
+            is Task.Error -> Task.Error(task.errorMessage)
+            is Task.Initial -> Task.Initial
+            is Task.Loading -> Task.Loading
+            is Task.Empty -> Task.Empty
+        }
+        loadingTaskFlow.tryEmit(result)
     }
 
     private fun <T> processCallbackEvent(
@@ -203,6 +261,7 @@ class FirebaseRepository @Inject constructor() {
         crossinline mapper: (T) -> A?,
         crossinline callback: (Task<List<A>>) -> Unit
     ) {
+        Log.d(LOG_TAG, "loadListDataFromFirebase: Task.Loading")
         callback.invoke(Task.Loading)
 
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -211,13 +270,16 @@ class FirebaseRepository @Inject constructor() {
                     val children = snapshot.children
                     val result = children.mapNotNull { it.getValue(T::class.java) }
                     val mappedResult = result.mapNotNull { mapper(it) }
+                    Log.d(LOG_TAG, "loadListDataFromFirebase: Task.Success")
                     callback.invoke(Task.Success(mappedResult))
                 } else {
+                    Log.d(LOG_TAG, "loadListDataFromFirebase: Task.Empty")
                     callback.invoke(Task.Empty)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                Log.d(LOG_TAG, "loadListDataFromFirebase: Task.Error")
                 callback.invoke(Task.Error(error.message))
             }
         })

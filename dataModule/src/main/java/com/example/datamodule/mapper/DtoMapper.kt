@@ -1,6 +1,7 @@
 package com.example.datamodule.mapper
 
 import com.example.datamodule.dto.EnglishIrregularVerbDto
+import com.example.datamodule.dto.EnglishItVerbDto
 import com.example.datamodule.dto.SpanishVerbDto
 import com.example.datamodule.dto.server.EnglishConditionalRuleDto
 import com.example.datamodule.dto.server.EnglishRulesDto
@@ -8,6 +9,7 @@ import com.example.datamodule.dto.server.EnglishTimeRuleDto
 import com.example.datamodule.models.EnglishIrregularVerbModel
 import com.example.datamodule.models.SpanishVerbModel
 import com.example.datamodule.models.english.EnglishConditionalModel
+import com.example.datamodule.models.english.EnglishItVerbModel
 import com.example.datamodule.models.english.EnglishRulesModel
 import com.example.datamodule.models.english.EnglishTimeRuleModel
 
@@ -78,4 +80,15 @@ fun EnglishRulesDto.mapToEnglishRulesModel(): EnglishRulesModel {
         timeRules = this.timeRules.mapNotNull { it.mapToEnglishTimeRuleModel() },
         conditionals = this.conditionals.mapNotNull { it.mapToEnglishConditionalRuleModel() }
     )
+}
+
+fun EnglishItVerbDto.mapToEnglishItVerbModel(): EnglishItVerbModel? {
+    return EnglishItVerbModel(
+        english = this.english ?: return null,
+        ukrainian = this.ukrainian ?: return null
+    )
+}
+
+fun List<EnglishItVerbDto>.mapToEnglishItVerbModelList(): List<EnglishItVerbModel>{
+    return this.mapNotNull { it.mapToEnglishItVerbModel() }
 }

@@ -3,6 +3,8 @@
     <string name="sign_up">Sign Up</string>
     <string name="pet_application">Pet Application</string>
     <string name="label_irregularVerbs">Irregular Verbs</string>
+    <string name="label_itVerbs">IT Verbs</string>
+    <string name="label_englishItVerbs">English IT Verbs</string>
     <string name="label_irregularVerbsDescription">Irregular verbs can have different forms for present, past, and past participle, and there is no consistent pattern for these changes. Learning irregular verbs is an essential part of mastering English grammar, and many common verbs fall into this category.</string>
     <string name="label_unknown">Unknown</string>
     <string name="label_home">Home</string>

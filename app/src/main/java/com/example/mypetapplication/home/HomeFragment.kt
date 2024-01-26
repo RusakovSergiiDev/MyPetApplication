@@ -23,6 +23,9 @@ class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
         viewModel.navigateToEnglishRulesEvent.observe(viewLifecycleOwner) {
             navigate(R.id.action_homeFragment_to_englishRulesFragment)
         }
+        viewModel.navigateToEnglishItVerbsEvent.observe(viewLifecycleOwner) {
+            navigate(R.id.action_homeFragment_to_englishItVerbsFragment)
+        }
         viewModel.navigateToEnglishIrregularVerbsEvent.observe(viewLifecycleOwner) {
             navigate(R.id.action_homeFragment_to_englishIrregularVerbsFragment)
         }

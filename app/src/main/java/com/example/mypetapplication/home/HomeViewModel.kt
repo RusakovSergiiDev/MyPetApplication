@@ -63,6 +63,7 @@ class HomeViewModel @Inject constructor(
 
     // Event(s)
     val navigateToEnglishRulesEvent = SimpleNavigationEvent()
+    val navigateToEnglishItVerbsEvent = SimpleNavigationEvent()
     val navigateToEnglishIrregularVerbsEvent = SimpleNavigationEvent()
     val navigateToSpanishTop200VerbsEvent = SimpleNavigationEvent()
 
@@ -97,6 +98,7 @@ class HomeViewModel @Inject constructor(
     private fun handleHomeMainOptionItemSelection(type: HomeMainOptionType) {
         when (type) {
             HomeMainOptionType.ENGLISH_RULES -> navigateToEnglishRulesEvent.call()
+            HomeMainOptionType.ENGLISH_IT_VERBS -> navigateToEnglishItVerbsEvent.call()
             HomeMainOptionType.ENGLISH_IRREGULAR_VERBS -> navigateToEnglishIrregularVerbsEvent.call()
             HomeMainOptionType.SPANISH_TOP_200_VERBS -> navigateToSpanishTop200VerbsEvent.call()
             else -> {}

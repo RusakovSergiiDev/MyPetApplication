@@ -32,6 +32,11 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
+            android:id="@+id/action_homeFragment_to_englishItVerbsFragment"
+            app:destination="@id/english_it_verbs_navigation"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
             android:id="@+id/action_homeFragment_to_englishIrregularVerbsFragment"
             app:destination="@id/english_irregular_verbs_navigation"
             app:enterAnim="@android:anim/fade_in"
@@ -58,8 +63,9 @@
             app:popUpToInclusive="true" />
     </fragment>
 
-    <include app:graph="@navigation/english_irregular_verbs_navigation" />
-    <include app:graph="@navigation/spanish_top_200_verbs_navigation" />
     <include app:graph="@navigation/english_rules_navigation" />
+    <include app:graph="@navigation/english_it_verbs_navigation" />
+    <include app:graph="@navigation/spanish_top_200_verbs_navigation" />
+    <include app:graph="@navigation/english_irregular_verbs_navigation" />
 
 </navigation>

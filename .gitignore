@@ -19,3 +19,4 @@ local.properties
 /.idea/vcs.xml
 /.idea/compiler.xml
 /.idea/kotlinc.xml
+/.idea/deploymentTargetDropDown.xml

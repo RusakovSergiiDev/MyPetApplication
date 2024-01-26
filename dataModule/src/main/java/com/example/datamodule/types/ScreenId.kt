@@ -7,5 +7,6 @@ enum class ScreenId {
     EnglishRulesScreen,
     EnglishIrregularVerbsScreen,
     EnglishAllIrregularVerbsScreen,
-    SpanishTop200VerbsScreen
+    SpanishTop200VerbsScreen,
+    SpanishItVerbsScreen
 }

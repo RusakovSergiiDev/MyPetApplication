@@ -18,6 +18,11 @@ class GetHomeFeaturesUseCase @Inject constructor() : IFlowTaskUseCase<List<HomeM
                 titleResId = R.string.label_englishRules,
             )
             result.add(englishRulesItem)
+            val englishItVerbsItem = HomeMainOptionModel(
+                type = HomeMainOptionType.ENGLISH_IT_VERBS,
+                titleResId = R.string.label_itVerbs,
+            )
+            result.add(englishItVerbsItem)
             val englishIrregularVerbsItem = HomeMainOptionModel(
                 type = HomeMainOptionType.ENGLISH_IRREGULAR_VERBS,
                 titleResId = R.string.label_irregularVerbs,
