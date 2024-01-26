@@ -1,30 +1,37 @@
-version: 2
+version: 2.1
+
 jobs:
   build:
-    working_directory: ~/code
     docker:
-      - image: circleci/android:api-25-alpha
-    environment:
-      JVM_OPTS: -Xmx3200m
+      - image: circleci/android:api-30  # Choose the Android API level you need
+
+    working_directory: ~/project
+
     steps:
       - checkout
+
+      # Download and install dependencies
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      #      - run:
-      #         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-      #         command: sudo chmod +x ./gradlew
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-
+
       - run:
-          name: Download Dependencies
+          name: Install Dependencies
           command: ./gradlew androidDependencies
+
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      # Build and run tests
       - run:
-          name: Run Tests
-          command: ./gradlew lint test
-      - store_artifacts:
-          path: app/build/reports
-          destination: reports
-      - store_test_results:
-          path: app/build/test-results
+          name: Build and Run Tests
+          command: ./gradlew build connectedCheck
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
