@@ -1,13 +1,9 @@
 package com.example.mypetapplication.features.english
 
-import androidx.compose.runtime.IntState
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.datamodule.models.english.EnglishIrregularCampaignModel
 import com.example.datamodule.models.english.EnglishIrregularMissionModel
+import com.example.datamodule.types.Task
 import com.example.logicmodule.usecases.english.GetEnglishIrregularVerbsCampaignTaskFlowUseCase
 import com.example.presentationmodule.R
 import com.example.mypetapplication.base.BaseContentViewModel
@@ -29,18 +25,21 @@ class EnglishIrregularVerbsViewModel @Inject constructor(
 
     // Internal param(s)
     private val initialState = EnglishIrregularVerbsState.Initial(
-        callback = { onMissionStartClicked() }
+        callback = { onCampaignStartClicked() }
     )
-    private val stateSource = mutableStateOf<EnglishIrregularVerbsState>(initialState)
-    private val currentMissionIndexStateSource = mutableIntStateOf(0)
-    private val currentMissionIndexState: IntState = currentMissionIndexStateSource
-    private val screenContentFlowSource = MutableStateFlow(EnglishIrregularVerbsScreenContent(stateSource))
+    private val finishState = EnglishIrregularVerbsState.Finish(
+        callback = { onCampaignRestartClicked() }
+    )
+    private val currentStateSource = mutableStateOf<EnglishIrregularVerbsState>(initialState)
+    private val screenContentFlowSource =
+        MutableStateFlow(EnglishIrregularVerbsScreenContent(currentStateSource))
+
+    // Base param(s)
+    override val screenContentFlow: Flow<EnglishIrregularVerbsScreenContent> =
+        screenContentFlowSource
 
     // Event(s)
     val navigateToSeeAllEvent = SimpleNavigationEvent()
-
-    override val screenContentFlow: Flow<EnglishIrregularVerbsScreenContent> =
-        screenContentFlowSource
 
     init {
         setupTopAppBar(titleResId = R.string.label_englishIrregularVerbs)
@@ -58,18 +57,25 @@ class EnglishIrregularVerbsViewModel @Inject constructor(
         navigateToSeeAllEvent.call()
     }
 
-    private fun onMissionStartClicked() {
-        executeForSuccessTaskResultUseCase(getEnglishIrregularVerbsCampaignTaskFlowUseCase) {missions ->
-            val campaign = EnglishIrregularCampaignModel(
-                missions = missions,
-                currentMissionIndex = currentMissionIndexState,
-                onMissionCheckCallback = { mission -> onMissionCheckCallback(mission) }
-            )
-            val campaignState = EnglishIrregularVerbsState.Campaign(
-                campaign = campaign
-            )
-            stateSource.value = campaignState
+    private fun generateAndStartCampaign() {
+        executeForTaskResultUseCase(getEnglishIrregularVerbsCampaignTaskFlowUseCase) { task ->
+            if (task is Task.Success) {
+                val campaignModel =
+                    task.data.copy(onMissionCheckCallback = { onMissionCheckCallback(it) })
+                val campaignState = EnglishIrregularVerbsState.Campaign(
+                    campaign = campaignModel
+                )
+                currentStateSource.value = campaignState
+            }
         }
+    }
+
+    private fun onCampaignStartClicked() {
+        generateAndStartCampaign()
+    }
+
+    private fun onCampaignRestartClicked() {
+        generateAndStartCampaign()
     }
 
     private fun onMissionCheckCallback(currentMission: EnglishIrregularMissionModel) {
@@ -77,13 +83,14 @@ class EnglishIrregularVerbsViewModel @Inject constructor(
             screenContentFlowSource.collect {
                 val state = it.state.value
                 if (state is EnglishIrregularVerbsState.Campaign) {
-                    val missions = state.campaign.missions
+                    val campaign = state.campaign
+                    val missions = campaign.missions
                     val index = missions.indexOf(currentMission)
                     delay(250)
                     if (index != missions.lastIndex) {
-                        currentMissionIndexStateSource.intValue = index + 1
+                        campaign.setCurrentMissionIndex(index + 1)
                     } else {
-
+                        currentStateSource.value = finishState
                     }
                 }
             }

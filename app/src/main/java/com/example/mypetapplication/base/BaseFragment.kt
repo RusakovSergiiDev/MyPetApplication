@@ -74,13 +74,14 @@ abstract class BaseFragment<VM : BaseViewModel>(
 
     protected fun <T : IScreenContent> createScreen(
         screenContentLiveData: LiveData<T?>,
+        isIgnoreGlobalLoading: Boolean = false,
         contentScreen: @Composable (State<T?>) -> Unit
     ): ComposeView {
         return ComposeView(requireContext()).apply {
             setContent {
                 BaseComposeScreen(
                     isShowGlobalSnackbarError = viewModel.snackbarErrorEvent.observeAsState(initial = null),
-                    isShowGlobalLoading = viewModel.isLoadingLiveData.observeAsState(initial = false),
+                    isShowGlobalLoading = if(isIgnoreGlobalLoading) null else viewModel.isLoadingLiveData.observeAsState(initial = false),
                     onRetryClicked = { viewModel.onRetryClicked() },
                     isShowGlobalRetry = viewModel.isContentInErrorStateLiveData.observeAsState(
                         initial = false

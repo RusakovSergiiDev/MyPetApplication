@@ -24,24 +24,22 @@ fun EnglishIrregularVerbsCampaignScreen(
     content: EnglishIrregularVerbsState.Campaign
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         val campaign = content.campaign
         val missions = campaign.missions
-        val currentMissionIndex = campaign.currentMissionIndex.value
+        val currentMissionIndex = campaign.getCurrentMissionIndexState().value
         val currentMission = missions[currentMissionIndex]
         val onMissionCheckCallback = campaign.onMissionCheckCallback
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(5.dp)
+                .height(4.dp)
         ) {
             for (index in 1 until missions.size) {
                 Box(
-                    modifier =
-                    Modifier
+                    modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
                         .background(
@@ -56,16 +54,10 @@ fun EnglishIrregularVerbsCampaignScreen(
         }
 
         AnimatedContent(
-            targetState = currentMission,
-            transitionSpec = {
-                slideInHorizontally(
-                    animationSpec = tween(500),
-                    initialOffsetX = { fullWidth -> fullWidth }
-                ) togetherWith
-                        slideOutHorizontally(
-                            animationSpec = tween(500),
-                            targetOffsetX = { fullWidth -> -fullWidth }
-                        )
+            targetState = currentMission, transitionSpec = {
+                slideInHorizontally(animationSpec = tween(500),
+                    initialOffsetX = { fullWidth -> fullWidth }) togetherWith slideOutHorizontally(animationSpec = tween(500),
+                    targetOffsetX = { fullWidth -> -fullWidth })
             }, label = ""
         ) { item ->
             EnglishIrregularVerbMissionCell(

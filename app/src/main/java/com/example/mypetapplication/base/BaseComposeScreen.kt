@@ -37,7 +37,7 @@ import com.example.presentationmodule.compose.topappbar.TopAppBarActionComponent
 @Composable
 fun <T : IScreenContent> BaseComposeScreen(
     isShowGlobalSnackbarError: State<String?>,
-    isShowGlobalLoading: State<Boolean>,
+    isShowGlobalLoading: State<Boolean>?,
     isShowGlobalRetry: State<Boolean>,
     onRetryClicked: (() -> Unit)? = null,
     topAppBarContentLiveData: LiveData<TopAppBarContent>,
@@ -110,7 +110,7 @@ fun <T : IScreenContent> BaseComposeScreen(
                         )
                     }
 
-                    val isLoadingState = isShowGlobalLoading.value
+                    val isLoadingState = isShowGlobalLoading?.value ?: false
                     val isRetryState = isShowGlobalRetry.value
                     if (isLoadingState) {
                         CircularProgressIndicator(

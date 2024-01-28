@@ -1,6 +1,8 @@
 package com.example.logicmodule.usecases.english
 
+import androidx.compose.runtime.mutableIntStateOf
 import com.example.datamodule.models.EnglishIrregularVerbModel
+import com.example.datamodule.models.english.EnglishIrregularCampaignModel
 import com.example.datamodule.models.english.EnglishIrregularMissionModel
 import com.example.datamodule.types.Task
 import com.example.logicmodule.repository.FirebaseRepository
@@ -11,29 +13,33 @@ import javax.inject.Inject
 
 class GetEnglishIrregularVerbsCampaignTaskFlowUseCase @Inject constructor(
     private val firebaseRepository: FirebaseRepository
-) : IFlowTaskUseCase<List<EnglishIrregularMissionModel>> {
+) : IFlowTaskUseCase<EnglishIrregularCampaignModel> {
 
-    override suspend fun execute(): Flow<Task<List<EnglishIrregularMissionModel>>> {
+    override suspend fun execute(): Flow<Task<EnglishIrregularCampaignModel>> {
         return callbackFlow {
             trySend(Task.Loading)
             firebaseRepository.getEnglishIrregularVerbsTaskFlowOrLoad().collect { task ->
                 if (task is Task.Success) {
                     val models = task.data
-                    val missions = generateCampaign(models)
-                    trySend(Task.Success(missions))
+                    val campaign = generateCampaign(models)
+                    trySend(Task.Success(campaign))
                     close()
                 } else {
-
+                    trySend(Task.Error("Error"))
+                    close()
                 }
             }
         }
 
     }
 
-    private fun generateCampaign(models: List<EnglishIrregularVerbModel>): List<EnglishIrregularMissionModel> {
-        val campaignModels = models.shuffled().take(10)
-        val campaignMissions = campaignModels.map { EnglishIrregularMissionModel(it) }
-        return campaignMissions
+    private fun generateCampaign(models: List<EnglishIrregularVerbModel>): EnglishIrregularCampaignModel {
+        val shuffledModels = models.shuffled().take(10)
+        val shuffledMissions = shuffledModels.map { EnglishIrregularMissionModel(it) }
+        return EnglishIrregularCampaignModel(
+            missions = shuffledMissions,
+            currentMissionIndex = mutableIntStateOf(0)
+        )
     }
 
     override suspend fun retry() {

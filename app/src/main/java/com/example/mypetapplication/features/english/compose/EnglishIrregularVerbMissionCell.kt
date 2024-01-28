@@ -13,7 +13,7 @@ import com.example.datamodule.models.english.EnglishIrregularMissionModel
 @Composable
 fun EnglishIrregularVerbMissionCell(
     mission: EnglishIrregularMissionModel,
-    missionCheckCallback: (EnglishIrregularMissionModel) -> Unit
+    missionCheckCallback: ((EnglishIrregularMissionModel) -> Unit)? = null
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -31,7 +31,7 @@ fun EnglishIrregularVerbMissionCell(
             Button(
                 modifier = Modifier.align(alignment = Alignment.Center),
                 onClick = {
-                    missionCheckCallback.invoke(mission)
+                    missionCheckCallback?.invoke(mission)
                 }
             ) {
                 Text(text = "Check")

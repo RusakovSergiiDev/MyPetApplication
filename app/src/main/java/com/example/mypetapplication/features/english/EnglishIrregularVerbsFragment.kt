@@ -16,7 +16,8 @@ class EnglishIrregularVerbsFragment :
         get() = ScreenId.EnglishIrregularVerbsScreen
 
     override fun provideView(): ComposeView = createScreen(
-        viewModel.screenContentLiveData,
+        screenContentLiveData = viewModel.screenContentLiveData,
+        isIgnoreGlobalLoading = true
     ) { contentState ->
         EnglishIrregularVerbsScreen(contentState)
     }
