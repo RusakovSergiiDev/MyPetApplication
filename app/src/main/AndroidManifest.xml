@@ -17,6 +17,11 @@
         android:theme="@style/Theme.MyPetApplication"
         tools:targetApi="31">
 
+        <service
+            android:name=".MyPetApplicationService"
+            android:enabled="true"
+            android:exported="true"/>
+
         <activity
             android:name=".main.MainActivity"
             android:exported="true">
@@ -26,7 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
