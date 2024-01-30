@@ -1,6 +1,6 @@
 package com.example.mypetapplication.features.english.data
 
-import com.example.datamodule.models.english.EnglishIrregularCampaignModel
+import com.example.logicmodule.data.EnglishIrregularCampaignModel
 
 sealed class EnglishIrregularVerbsState {
     class Initial(val callback: () -> Unit) : EnglishIrregularVerbsState()

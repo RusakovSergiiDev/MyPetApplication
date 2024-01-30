@@ -2,9 +2,9 @@ package com.example.logicmodule.usecases.english
 
 import androidx.compose.runtime.mutableIntStateOf
 import com.example.datamodule.models.EnglishIrregularVerbModel
-import com.example.datamodule.models.english.EnglishIrregularCampaignModel
 import com.example.datamodule.models.english.EnglishIrregularMissionModel
 import com.example.datamodule.types.Task
+import com.example.logicmodule.data.EnglishIrregularCampaignModel
 import com.example.logicmodule.repository.FirebaseRepository
 import com.example.logicmodule.usecases.IFlowTaskUseCase
 import kotlinx.coroutines.flow.Flow
