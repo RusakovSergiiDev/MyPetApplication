@@ -9,7 +9,9 @@ import java.util.concurrent.TimeUnit
 
 class MyPetApplicationService : Service() {
 
-    val LOG_TAG = "myLogs"
+    companion object {
+        const val LOG_TAG = "myLogs"
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -32,13 +34,15 @@ class MyPetApplicationService : Service() {
         return null
     }
 
-    fun someTask() {
+    @Suppress("MagicNumber")
+    private fun someTask() {
         for (i in 1..5) {
             Log.d(LOG_TAG, "i = $i")
             try {
                 TimeUnit.SECONDS.sleep(1)
             } catch (e: InterruptedException) {
-                e.printStackTrace()
+                Log.d(LOG_TAG, e.toString())
+                // e.printStackTrace()
             }
         }
     }

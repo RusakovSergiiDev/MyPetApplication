@@ -81,7 +81,8 @@ abstract class BaseFragment<VM : BaseViewModel>(
             setContent {
                 BaseComposeScreen(
                     isShowGlobalSnackbarError = viewModel.snackbarErrorEvent.observeAsState(initial = null),
-                    isShowGlobalLoading = if(isIgnoreGlobalLoading) null else viewModel.isLoadingLiveData.observeAsState(initial = false),
+                    isShowGlobalLoading = if (isIgnoreGlobalLoading) null
+                    else viewModel.isLoadingLiveData.observeAsState(initial = false),
                     onRetryClicked = { viewModel.onRetryClicked() },
                     isShowGlobalRetry = viewModel.isContentInErrorStateLiveData.observeAsState(
                         initial = false
@@ -95,6 +96,6 @@ abstract class BaseFragment<VM : BaseViewModel>(
         }
     }
 
-    private fun getOnBackClicked(isShowBackAction: Boolean): (() -> Unit)? =
-        if (isShowBackAction) viewModel::onBackClicked else null
+//    private fun getOnBackClicked(isShowBackAction: Boolean): (() -> Unit)? =
+//        if (isShowBackAction) viewModel::onBackClicked else null
 }

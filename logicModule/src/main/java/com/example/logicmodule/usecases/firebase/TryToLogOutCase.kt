@@ -9,6 +9,7 @@ class TryToLogOutCase @Inject constructor(
     private val firebaseRepository: FirebaseRepository
 ) {
 
+    @SuppressWarnings("MagicNumber")
     suspend fun execute(callback: (Task<Unit>) -> Unit) {
         callback.invoke(Task.Loading)
         delay(2000)

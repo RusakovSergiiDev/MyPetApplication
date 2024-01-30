@@ -19,10 +19,6 @@ class ContentRepository @Inject constructor(
     private val englishService: EnglishService
 ) {
 
-    companion object {
-        private const val LOG_TAG = "CONTENT_REPOSITORY"
-    }
-
     // Internal param(s)
     private val testDataTaskFlowSource = MutableStateFlow<Task<Unit>>(Task.Initial)
     private val featureListTaskFlowSource = MutableStateFlow<Task<List<FeatureDto>>>(Task.Initial)
@@ -42,6 +38,7 @@ class ContentRepository @Inject constructor(
         return featureListTaskFlow
     }
 
+    @SuppressWarnings("MagicNumber", "TooGenericExceptionCaught")
     suspend fun loadFeatureList() {
         featureListTaskFlowSource.value = Task.Loading
         delay(3000)
@@ -62,6 +59,8 @@ class ContentRepository @Inject constructor(
         return englishRulesTaskFlow
     }
 
+
+    @SuppressWarnings("TooGenericExceptionCaught")
     suspend fun loadEnglishRules() {
         englishRulesTaskFlowSource.value = Task.Loading
         try {
@@ -86,6 +85,7 @@ class ContentRepository @Inject constructor(
         return testDataTaskFlow
     }
 
+    @SuppressWarnings("MagicNumber", "TooGenericExceptionCaught")
     suspend fun loadTestData() {
         testDataTaskFlowSource.value = Task.Loading
         try {
@@ -96,6 +96,7 @@ class ContentRepository @Inject constructor(
         }
     }
 
+    @SuppressWarnings("MagicNumber", "TooGenericExceptionCaught")
     suspend fun loadTestDataWithError() {
         testDataTaskFlowSource.value = Task.Loading
         try {

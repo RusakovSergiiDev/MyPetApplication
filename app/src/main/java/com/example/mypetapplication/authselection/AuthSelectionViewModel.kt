@@ -153,6 +153,7 @@ class AuthSelectionViewModel @Inject constructor(
 //        }
     }
 
+    @Suppress("MagicNumber")
     private fun showErrorSnackbar(error: String) {
         showAndHideErrorSnackbarJob = viewModelScope.launch {
             snackbarErrorEvent.value = error

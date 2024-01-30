@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.mypetapplication.features.english.data.EnglishIrregularVerbsState
 
+@Suppress("MagicNumber")
 @Composable
 fun EnglishIrregularVerbsCampaignScreen(
     content: EnglishIrregularVerbsState.Campaign
@@ -56,8 +57,9 @@ fun EnglishIrregularVerbsCampaignScreen(
         AnimatedContent(
             targetState = currentMission, transitionSpec = {
                 slideInHorizontally(animationSpec = tween(500),
-                    initialOffsetX = { fullWidth -> fullWidth }) togetherWith slideOutHorizontally(animationSpec = tween(500),
-                    targetOffsetX = { fullWidth -> -fullWidth })
+                    initialOffsetX = { fullWidth -> fullWidth }) togetherWith
+                        slideOutHorizontally(animationSpec = tween(500),
+                            targetOffsetX = { fullWidth -> -fullWidth })
             }, label = ""
         ) { item ->
             EnglishIrregularVerbMissionCell(

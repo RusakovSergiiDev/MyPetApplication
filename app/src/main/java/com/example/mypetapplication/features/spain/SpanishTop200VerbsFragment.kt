@@ -22,6 +22,6 @@ class SpanishTop200VerbsFragment :
     }
 
     override fun onSetupObservers() {
-
+        // Nothing
     }
 }

@@ -20,6 +20,6 @@ class EnglishRulesFragment :
     }
 
     override fun onSetupObservers() {
-
+        // Nothing
     }
 }

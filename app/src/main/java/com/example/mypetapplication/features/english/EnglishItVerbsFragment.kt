@@ -19,6 +19,6 @@ class EnglishItVerbsFragment :
         }
 
     override fun onSetupObservers() {
-
+        // Nothing
     }
 }

@@ -33,6 +33,7 @@ import com.example.presentationmodule.R
 import com.example.presentationmodule.AppTheme
 import com.example.presentationmodule.compose.topappbar.TopAppBarActionComponent
 
+@SuppressWarnings("LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : IScreenContent> BaseComposeScreen(

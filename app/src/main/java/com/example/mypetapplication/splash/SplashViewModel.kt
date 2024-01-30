@@ -73,6 +73,7 @@ class SplashViewModel @Inject constructor(
         checkIsAuthenticationCompleted()
     }
 
+    @Suppress("MagicNumber")
     private fun startTimer() {
         viewModelScope.launch {
             delay(3000)

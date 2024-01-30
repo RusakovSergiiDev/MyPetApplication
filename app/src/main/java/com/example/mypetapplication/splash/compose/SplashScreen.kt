@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mypetapplication.splash.data.SplashScreenContent
 
+@Suppress("UnusedPrivateMember")
 @Composable
 fun SplashScreen(
     contentState: State<SplashScreenContent?>

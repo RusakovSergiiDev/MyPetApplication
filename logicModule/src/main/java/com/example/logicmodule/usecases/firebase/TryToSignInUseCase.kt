@@ -9,6 +9,7 @@ class TryToSignInUseCase @Inject constructor(
     private val firebaseRepository: FirebaseRepository
 ) {
 
+    @SuppressWarnings("MagicNumber", "TooGenericExceptionCaught")
     suspend fun execute(email: String, password: String, callback: (Task<Unit>) -> Unit) {
         callback.invoke(Task.Loading)
         try {

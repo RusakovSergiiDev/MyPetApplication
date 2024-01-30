@@ -14,6 +14,6 @@ class AsyncTestFragment : BaseFragment<AsyncTestViewModel>(AsyncTestViewModel::c
     }
 
     override fun onSetupObservers() {
-
+        // Nothing
     }
 }

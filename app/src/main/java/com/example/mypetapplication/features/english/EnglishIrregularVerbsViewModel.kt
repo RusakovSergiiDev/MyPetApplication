@@ -78,6 +78,7 @@ class EnglishIrregularVerbsViewModel @Inject constructor(
         generateAndStartCampaign()
     }
 
+    @Suppress("MagicNumber")
     private fun onMissionCheckCallback(currentMission: EnglishIrregularMissionModel) {
         viewModelScope.launch {
             screenContentFlowSource.collect {

@@ -33,6 +33,7 @@ class GetEnglishIrregularVerbsCampaignTaskFlowUseCase @Inject constructor(
 
     }
 
+    @SuppressWarnings("MagicNumber")
     private fun generateCampaign(models: List<EnglishIrregularVerbModel>): EnglishIrregularCampaignModel {
         val shuffledModels = models.shuffled().take(10)
         val shuffledMissions = shuffledModels.map { EnglishIrregularMissionModel(it) }
@@ -43,6 +44,6 @@ class GetEnglishIrregularVerbsCampaignTaskFlowUseCase @Inject constructor(
     }
 
     override suspend fun retry() {
-
+        // Nothing
     }
 }

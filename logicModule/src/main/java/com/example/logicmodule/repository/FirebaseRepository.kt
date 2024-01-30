@@ -81,6 +81,7 @@ class FirebaseRepository @Inject constructor() {
         return firebaseAuth.signOut()
     }
 
+    @SuppressWarnings("MagicNumber")
     suspend fun getEnglishRulesTaskFlowOrLoad(): Flow<Task<EnglishRulesModel>> {
         if (englishRulesFlowSource.value.isInitial()) {
             coroutineScope {
@@ -137,6 +138,7 @@ class FirebaseRepository @Inject constructor() {
         )
     }
 
+    @SuppressWarnings("MagicNumber")
     suspend fun loadEnglishItVerbs() {
         delay(1000)
         loadListDataFromFirebase<EnglishItVerbDto, EnglishItVerbModel>(

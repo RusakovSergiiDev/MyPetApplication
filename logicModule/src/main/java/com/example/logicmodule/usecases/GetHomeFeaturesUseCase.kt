@@ -44,7 +44,7 @@ class GetHomeFeaturesUseCase @Inject constructor() : IFlowTaskUseCase<List<HomeM
     }
 
     override suspend fun retry() {
-
+        // Nothing
     }
 
 }

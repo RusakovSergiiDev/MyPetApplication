@@ -21,6 +21,6 @@ class EnglishAllIrregularVerbsFragment :
     }
 
     override fun onSetupObservers() {
-
+        // Nothing
     }
 }
