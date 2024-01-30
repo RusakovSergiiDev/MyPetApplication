@@ -32,6 +32,9 @@ class HomeFragment : BaseFragment<HomeViewModel>(HomeViewModel::class.java) {
         viewModel.navigateToSpanishTop200VerbsEvent.observe(viewLifecycleOwner) {
             navigate(R.id.action_homeFragment_to_spanishTop200VerbsFragment)
         }
+        viewModel.navigateToAsyncTestEvent.observe(viewLifecycleOwner) {
+            navigate(R.id.action_homeFragment_to_asyncTestFragment)
+        }
         viewModel.logOutEvent.observe(viewLifecycleOwner) {
             navigate(R.id.action_homeFragment_to_authSelectionFragment)
         }

@@ -66,6 +66,7 @@ class HomeViewModel @Inject constructor(
     val navigateToEnglishItVerbsEvent = SimpleNavigationEvent()
     val navigateToEnglishIrregularVerbsEvent = SimpleNavigationEvent()
     val navigateToSpanishTop200VerbsEvent = SimpleNavigationEvent()
+    val navigateToAsyncTestEvent = SimpleNavigationEvent()
 
     init {
         setTopAppBarNavigationIcon(TopAppBarNavigationIcon(
@@ -101,6 +102,7 @@ class HomeViewModel @Inject constructor(
             HomeMainOptionType.ENGLISH_IT_VERBS -> navigateToEnglishItVerbsEvent.call()
             HomeMainOptionType.ENGLISH_IRREGULAR_VERBS -> navigateToEnglishIrregularVerbsEvent.call()
             HomeMainOptionType.SPANISH_TOP_200_VERBS -> navigateToSpanishTop200VerbsEvent.call()
+            HomeMainOptionType.ASYNC_TEST -> navigateToAsyncTestEvent.call()
             else -> {}
         }
     }

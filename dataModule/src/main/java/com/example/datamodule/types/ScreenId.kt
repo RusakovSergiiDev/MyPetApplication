@@ -8,5 +8,6 @@ enum class ScreenId {
     EnglishIrregularVerbsScreen,
     EnglishAllIrregularVerbsScreen,
     SpanishTop200VerbsScreen,
-    SpanishItVerbsScreen
+    SpanishItVerbsScreen,
+    AsyncTestScreen
 }

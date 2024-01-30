@@ -47,6 +47,11 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
+            android:id="@+id/action_homeFragment_to_asyncTestFragment"
+            app:destination="@id/async_test_navigation"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
             android:id="@+id/action_homeFragment_to_authSelectionFragment"
             app:destination="@id/authSelectionFragment"
             app:popUpTo="@+id/homeFragment"
@@ -67,5 +72,6 @@
     <include app:graph="@navigation/english_it_verbs_navigation" />
     <include app:graph="@navigation/spanish_top_200_verbs_navigation" />
     <include app:graph="@navigation/english_irregular_verbs_navigation" />
+    <include app:graph="@navigation/async_test_navigation" />
 
 </navigation>

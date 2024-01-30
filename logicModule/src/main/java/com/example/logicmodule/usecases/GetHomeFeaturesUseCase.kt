@@ -34,6 +34,11 @@ class GetHomeFeaturesUseCase @Inject constructor() : IFlowTaskUseCase<List<HomeM
                 titleResId = R.string.label_homeOptionSpanishVerbs,
             )
             result.add(spainVerbsItem)
+            val asyncTestItem = HomeMainOptionModel(
+                type = HomeMainOptionType.ASYNC_TEST,
+                titleResId = R.string.label_asyncTest,
+            )
+            result.add(asyncTestItem)
             emit(Task.Success(result.toList()))
         }
     }
